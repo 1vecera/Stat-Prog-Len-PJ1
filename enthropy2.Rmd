@@ -1,0 +1,67 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library("RSQLite")
+library('entropy')
+library('ggplot2')
+
+con <- dbConnect(drv=RSQLite::SQLite(), dbname="database.sqlite")
+all.leagues <- dbGetQuery(conn=con, statement="SELECT * FROM 'League' ")
+print(all.leagues)
+```
+```{r}
+leagues <- data.frame(league_name=character(), 
+                 league_id=integer(),  stringsAsFactors=FALSE) 
+leagues[1, ] <-  c('England', 1729)
+leagues[2, ] <- c('France', 4769)
+leagues[3, ] <- c('Germany', 7809)
+leagues[4, ] <- c('Italy', 10257)
+leagues[5, ] <- c('Spain', 21518)
+
+leagues
+```
+```{r}
+league.ids  <- paste(leagues[ , 2], collapse = ', ')
+table  <- dbGetQuery(conn=con, statement=paste("SELECT * FROM Match WHERE league_id IN (" , league.ids , ")", sep=""))
+match = table[, c("id", "league_id", "season", "home_team_api_id", "away_team_api_id",  'B365H', 'B365D' ,'B365A', 'home_team_goal', 'away_team_goal' )]
+dbDisconnect(con)
+matches<- merge(match, leagues, by.x = "league_id", by.y="league_id")
+print(matches)
+```
+```{r}
+matches$underdog <-ifelse(
+  (matches$B365H >= matches$B365A & matches$home_team_goal > matches$away_team_goal) | 
+  (matches$B365H <= matches$B365A & matches$home_team_goal < matches$away_team_goal)
+  ,1,0) 
+matches<-subset(matches, matches$home_team_goal!=matches$away_team_goal)
+print(matches)
+
+```
+#aggregate data by season and league
+
+```{r}
+byleague <- aggregate(x=matches$underdog, list(league.name=matches$league_name, seasons=matches$season), FUN = function(x) mean(x, na.rm=TRUE))
+print(byleague)
+```
+```{r}
+newDF <- subset (matches, select = c("id", "season", "league_id", "league_name", "home_team_api_id", "underdog"))
+names(newDF)[5] <-paste("team.id")
+print(newDF)
+newnewDF<-subset (matches, select = c("id", "season", "league_id", "league_name", "away_team_api_id", "underdog"))
+names(newnewDF)[5] <-paste("team.id")
+print(newDF)
+print(newnewDF)
+allmatches <- rbind(newDF, newnewDF)
+print(allmatches)
+byteam <- aggregate(x=allmatches$underdog, list(league_name=allmatches$league_name, seasons=allmatches$season, team.id=allmatches$team.id), FUN = function(x) mean(x, na.rm=TRUE))
+print(byteam)
+
+```
+
