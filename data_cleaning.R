@@ -8,13 +8,13 @@
 
 ### 2 new features created: player age and player body mass index
 
-rm(list = ls())
+# rm(list = ls()) NOTE DANIEL: HAZARD; DONT DO IN CODE 
 
 library(RSQLite)
 library(dplyr)
 library(stringr)
 
-setwd("/Users/jessiehsieh/Documents/Programming/Statical Programming Language/Seminar Paper/")
+# setwd("/Users/jessiehsieh/Documents/Programming/Statical Programming Language/Seminar Paper/"): NOTE DANIEL: Don't do here! It does not work for others, set manually or in PROEJCT
 
 ##### Before running further, please change this line to your own file directory for the .sqlite file:
 con <- dbConnect(SQLite(), dbname="database.sqlite")
