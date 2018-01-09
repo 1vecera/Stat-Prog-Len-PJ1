@@ -30,6 +30,31 @@ for (j in 1:ncol) #apply(Player_Attributes,2,is.numeric) doesn't yield the corre
   {col_quant=c(col_quant,j)}
 }
 
+
+
+
+if(file.exists("Player_all.rds")){ #Check if the Finished files are in the directory
+  Player_all = readRDS("Player_all.rds")
+} else {source("data_cleaning.R")}
+
+
+
+
+
+# Note DANIEL: Alternatively 
+
+
+
+#2/We extract the quantitative informations
+
+#We generate here a new database for Player_Attributes where we average over the several games of each player
+quant=Player_all[,c(4,6,7,11:38)] #NOTE DANIEL: WORK WITH THE RIGHT DATA, We have to delete non quantitative variables
+quant=na.omit(quant) #We have to delete the rows containing some missing values #not the best way to do
+L=levels(as.factor(quant$player_fifa_api_id))
+length(L) #number of different players : 10582
+Player_Attributes_quant_mean=aggregate(quant,by=list(quant$player_fifa_api_id), mean)[-1]
+
+
 #quant=Player_Attributes[,-c(3,6,7)] #We have to delete nonquantitative variables
 quant=na.omit(Player_Attributes[,col_quant]) #We have to delete the rows containing some missing values #not the best way to do
 Player_Attributes_quant_mean=aggregate(quant,by=list(quant$player_api_id), mean)[-c(1,2,3,4)]
@@ -201,19 +226,29 @@ PCA1=function(table,norm,order=2,desiredvariance=0.8) #default value of order is
 
 #We can check that we obtain the same results with the function of R
 
-pca=PCA(Player_Attributes_quant_mean)
+
+pca=PCA(Player_Attributes_quant_mean[-1],1, order = 5) #DANIEL: All of the attributes without the id
+
 pca$val3 #relative cumsum of the inertia 
 F=pca$val1 #contributions of the players to the axes (It should be interesting to visualize the positions of the players in the plane F1-F2)
 G=pca$val2 #contributions of the variables to the axes (rule of thumb : We only keep the contributions greather than 1/p*100=2.7)
 R=pca$val4 #correlation matrix
 
+
 test1=PCA(Player_Attributes_quant_mean,0)$val4
 test2=PCA1(Player_Attributes_quant_mean,0)$val4
 
 
+test =  principal(r = quant,nfactors = 5, rotate = "none" )
+
+
+
 #6/normed CPA using the function of R
-library(ade4)
-pca1=dudi.pca(Player_Attributes_quant_mean,center=TRUE,scale=TRUE) #normed PCA
+
+
+
+pca1=dudi.pca(test,center=TRUE,scale=TRUE) #normed PCA
+
 ###### Please wait before running further
 inertia=inertia.dudi(pca1, col.inertia=TRUE)
 round(pca1$eig,2) #eigenvalues
