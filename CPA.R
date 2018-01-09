@@ -16,9 +16,7 @@ rm(list=ls())
 #source("/Users/julien/Desktop/read_data_primary_clean_Julien.R")
 
 
-isTRUE(file.exists("Match.rds","Player.rds"))
-?file.exists
-all(file.exists("Match.rds","Player.rds"))
+
 
 if(file.exists("Player_all.rds")){ #Check if the Finished files are in the directory
   Player_all = readRDS("Player_all.rds")
@@ -148,19 +146,20 @@ PCA=function(table,norm,order=2) #default value of order is 2 (more convenient f
 
 #We can check that we obtain the same results with the function of R
 
-pca=PCA(Player_Attributes_quant_mean[-1],1) #DANIEL: All of the attributes without the id
+pca=PCA(Player_Attributes_quant_mean[-1],1, order = 5) #DANIEL: All of the attributes without the id
 pca$val3 #relative cumsum of the inertia 
 F=pca$val1 #contributions of the players to the axes (It should be interesting to visualize the positions of the players in the plane F1-F2)
 G=pca$val2 #contributions of the variables to the axes (rule of thumb : We only keep the contributions greather than 1/p*100=2.7)
 R=pca$val4 #correlation matrix
 
  
-pca$val2
+View(varimax)
+varimax(G, normalize = F)
 
 test =  principal(r = quant,nfactors = 5, rotate = "none" )
+test
 
-
-
+pca$val2
 
 #6/normed CPA using the function of R
 
