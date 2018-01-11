@@ -25,7 +25,8 @@ When you click the **Knit** button a document will be generated that includes bo
 
 ### Next Setion
 
-```{5+5}
+```{r  test}
+
 5+5
 
 ```
