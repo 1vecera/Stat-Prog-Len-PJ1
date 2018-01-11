@@ -9,56 +9,29 @@
 #Author :Julien Kraemer
 
 #Example :Run the PCA on a set of player attributes ,visualize the results in 2-dimension and compare with the function dudi.pca
-#1/We load the table Player_Attributes
-
-##Before running further, please change the following line to your own file directory
 
 rm(list=ls())
-#source("/Users/julien/Desktop/read_data_primary_clean_Julien.R")
-source("/Users/julien/Desktop/data_cleaning_Julien.R")
 
+library(psych)
+library(ade4)
 
 #2/We extract quantitative information
 
-#We generate here a new database for Player_Attributes where we average over the several games of each player
-
-ncol=dim(Player_Attributes)[2]
-col_quant=c()
-for (j in 1:ncol) #apply(Player_Attributes,2,is.numeric) doesn't yield the correct outcome
-{
-  if (is.numeric(Player_Attributes[,j])==TRUE)
-  {col_quant=c(col_quant,j)}
-}
-
-
-
-
+#We load the table Player_all
 if(file.exists("Player_all.rds")){ #Check if the Finished files are in the directory
   Player_all = readRDS("Player_all.rds")
 } else {source("data_cleaning.R")}
 
 
 
-
-
-# Note DANIEL: Alternatively 
-
-
-
 #2/We extract the quantitative informations
 
-#We generate here a new database for Player_Attributes where we average over the several games of each player
-quant=Player_all[,c(4,6,7,11:38)] #NOTE DANIEL: WORK WITH THE RIGHT DATA, We have to delete non quantitative variables
+#We generate here a new database where we average over the several games of each player
+quant=Player_all[,c(4,6,7,11:38)] #We only keep a subset of nonquantitative variables
 quant=na.omit(quant) #We have to delete the rows containing some missing values #not the best way to do
 L=levels(as.factor(quant$player_fifa_api_id))
 length(L) #number of different players : 10582
 Player_Attributes_quant_mean=aggregate(quant,by=list(quant$player_fifa_api_id), mean)[-1]
-
-
-#quant=Player_Attributes[,-c(3,6,7)] #We have to delete nonquantitative variables
-quant=na.omit(Player_Attributes[,col_quant]) #We have to delete the rows containing some missing values #not the best way to do
-Player_Attributes_quant_mean=aggregate(quant,by=list(quant$player_api_id), mean)[-c(1,2,3,4)]
-
 
 
 #3/PCA
@@ -109,7 +82,7 @@ PCA=function(table,norm=T,order=2,desiredvariance=0.8) #default value of order i
         cor[m,j]=G[j,m]/sqrt(1/n*t(table[,j])%*%table[,j])
       }
     }
-    return(list(val1=FF, val2=G,val3=cor,val4=cum,val5=R)) #We return FF,G,cor,the inertia proportion and the correlation matrix
+    return(list(FF=FF, G=G,cor=cor,cum=cum,R=R)) #We return FF,G,cor,the inertia proportion and the correlation matrix
     #Coordinates of points in the area of variables
   }
   else 
@@ -118,142 +91,30 @@ PCA=function(table,norm=T,order=2,desiredvariance=0.8) #default value of order i
   }
 }
 
-
-PCA1=function(table,norm,order=2,desiredvariance=0.8) #default value of order is 2 (more convenient for plotting)
-{
-  if (norm==0) #non normed PCA
-  {
-    table=scale(table,center=TRUE,scale=FALSE) #We center the dataset (but we don't scale)
-    n=dim(table)[1] #number of indivuals (rows)
-    p=dim(table)[2] #number of variables (columns)
-    D=1/n*diag(rep(1,n)) #matrix with the weights of indivuals
-    Q=diag(rep(1,p))
-    S=t(table)%*%D%*%table #sample covariance matrix
-    u=diag(S)
-    u=1/sqrt(u)
-    D1s=diag(u)
-    R=D1s%*%S%*%D1s #sample correlation matrix
-    eigenvalues=eigen(S)$values
-    eigenvectors=eigen(S)$vectors
-    inertia=sum(diag(S)) #inertia is the sum of the eigenvalues
-    cum=cumsum(eigen(S)$values)/inertia # cumulative energy /inertia
-    i=1
-    while (cum[i]<desiredvariance) 
-    {
-      i=i+1
-    }
-    i=order
-    #We project the table on the i first vectors
-    #We compute the main factors and the coordinates of the individuals on the i first axes
-    #Main factors are main axes since Q=Ip
-    #Gk for 1<=k<=i fulfill : Fk=table*uk where (uk)_k are the main axes
-    FF=matrix(rep(0,n*i),ncol=i) #zero matrix for storing the Fk's
-    G=matrix(rep(0,p*i),ncol=i) #zero matrix for storing the Gk's
-    nor=matrix(rep(0,p*i),ncol=i)
-    cor=matrix(rep(0,i*p),ncol=p)
-    for (k in 0:i) 
-    {
-      FF[,k]=table%*%eigenvectors[,k]
-      G[,k]=sqrt(eigenvalues[k])*eigenvectors[,k]
-    }
-    for (m in 1:i)
-    {
-      for (j in 1:p)
-      {
-        cor[m,j]=G[j,m]/sqrt(1/n*t(table[,j])%*%table[,j])
-      }
-    }
-    return(list(val1=FF, val2=G,val3=cor,val4=cum,val5=R)) #We return FF,G,cor,the inertia proportion and the correlation matrix
-    #Coordinates of points in the area of variables
-    
-    
-    
-  }
-  else if (norm==1) #normed CPA
-  {
-    table=scale(table,center=TRUE,scale=TRUE) #We center and scale
-    n=dim(table)[1] #number of indivuals (rows)
-    p=dim(table)[2] #number of variables (columns)
-    D=1/n*diag(rep(1,n)) #matrix with the weights of indivuals
-    Q=diag(rep(1,p))
-    S=t(table)%*%D%*%table #sample covariance matrix
-    u=diag(S)
-    u=1/sqrt(u)
-    D1s=diag(u)
-    R=D1s%*%S%*%D1s #sample correlation matrix
-    eigenvalues=eigen(S)$values
-    eigenvectors=eigen(S)$vectors
-    inertia=sum(diag(S)) #inertia is the sum of the eigenvalues
-    cum=cumsum(eigen(S)$values)/inertia # cumulative energy /inertia
-    i=1
-    while (cum[i]<desiredvariance) 
-    {
-      i=i+1
-    }
-    i=order
-    #We project the table on the i first vectors
-    #We compute the main factors and the coordinates of the individuals on the i first axes
-    #Main factors are main axes since Q=Ip
-    #Gk for 1<=k<=i fulfill : Fk=table*uk where (uk)_k are the main axes
-    FF=matrix(rep(0,n*i),ncol=i) #zero matrix for storing the Fk's
-    G=matrix(rep(0,p*i),ncol=i) #zero matrix for storing the Gk's
-    nor=matrix(rep(0,p*i),ncol=i)
-    cor=matrix(rep(0,i*p),ncol=p)
-    for (k in 0:i) 
-    {
-      FF[,k]=table%*%eigenvectors[,k]
-      G[,k]=sqrt(eigenvalues[k])*eigenvectors[,k]
-    }
-    for (m in 1:i)
-    {
-      for (j in 1:p)
-      {
-        cor[m,j]=G[j,m]/sqrt(1/n*t(table[,j])%*%table[,j])
-      }
-    }
-    return(list(val1=FF, val2=G,val3=cor,val4=cum,val5=R)) #We return FF,G,cor,the inertia proportion and the correlation matrix
-    #Coordinates of points in the area of variables
-    
-  }
-  else 
-  {
-    return ("Please precise wheter you want a non normed PCA or a normed PCA")
-  }
-}
-
-
 #5/ First results
 
 #We can check that we obtain the same results with the function of R
 
+pca=PCA(Player_Attributes_quant_mean[-1], order = 5) #All of the attributes without the id
 
-pca=PCA(Player_Attributes_quant_mean[-1],1, order = 5) #DANIEL: All of the attributes without the id
+cum=pca$cum #relative cumsum of the inertia 
+FF=pca$FF #contributions of the players to the axes (It should be interesting to visualize the positions of the players in the plane F1-F2)
+G=pca$G #contributions of the variables to the axes (rule of thumb : We only keep the contributions greather than 1/p*100=2.7)
+R=pca$R #correlation matrix
 
-pca$val3 #relative cumsum of the inertia 
-F=pca$val1 #contributions of the players to the axes (It should be interesting to visualize the positions of the players in the plane F1-F2)
-G=pca$val2 #contributions of the variables to the axes (rule of thumb : We only keep the contributions greather than 1/p*100=2.7)
-R=pca$val4 #correlation matrix
-
-
-test1=PCA(Player_Attributes_quant_mean,0)$val4
-test2=PCA1(Player_Attributes_quant_mean,0)$val4
+test =  principal(r =Player_Attributes_quant_mean[,-1],nfactors = 5, rotate = "none" )
 
 
-test =  principal(r = quant,nfactors = 5, rotate = "none" )
+#6/Comparison with the normed CPA using the function of R
 
 
-
-#6/normed CPA using the function of R
-
-
-
-pca1=dudi.pca(test,center=TRUE,scale=TRUE) #normed PCA
+pca1=dudi.pca(Player_Attributes_quant_mean[,-1],center=TRUE,scale=TRUE) #normed PCA
 
 ###### Please wait before running further
 inertia=inertia.dudi(pca1, col.inertia=TRUE)
 round(pca1$eig,2) #eigenvalues
 round(cumsum(pca1$eig)/sum(pca1$eig),2) # relative cumsum of the inertia (cumsum of inertia /inertia)
-#Around 61% of the inertia is caught by the plane (F1-F2)
+#Around 66% of the inertia is caught by the plane (F1-F2)
 GR=round(pca1$co,2) #G
 FR=round(pca1$li,2)#F
 
@@ -267,7 +128,7 @@ s.corcircle(G,clab=0.5,sub = "Correlation circle", csub = 2.5)
 #The well represented variables are those which are near the edge of the correlation circle and the variables near (0,0) aren't well represented
 
 #Representation of the players in the plane (F1-F2)
-plot(F[,1],F[,2],xlab="first axis",ylab="second axis",main="Representation of the players in the plane (F1-F2)")
+plot(FF[,1],FF[,2],xlab="first axis",ylab="second axis",main="Representation of the players in the plane (F1-F2)")
 
 #We can distinguish two group of players : which are the characteristics of those two groups ?
 
@@ -279,10 +140,10 @@ lam2=(eigen(R)$values)[2]
 n=dim(Player_Attributes_quant_mean)[1]
 
 #Contribution of the players to the first axis
-ctr1players=1/(n*lam1)*100*F[,1]^2
+ctr1players=1/(n*lam1)*100*FF[,1]^2
 
 #Contribution of the players to the second axis
-ctr2players=1/(n*lam2)*100*F[,2]^2
+ctr2players=1/(n*lam2)*100*FF[,2]^2
 
 #Rule of thumb :
 #We only consider the contributions greather than 1/n*100
@@ -326,13 +187,13 @@ names(Player_Attributes_quant_mean)[Importantvariables2]
 
 
 #Interpretation in higher dimensions :
-order=5
-pca5=PCA(Player_Attributes_quant_mean,order=order)
-F=pca5$val1 #contributions of the players to the axes (It should be interesting to visualize the positions of the players in the plane F1-F2)
-G=pca5$val2 #contributions of the variables to the axes (rule of thumb : We only keep the contributions greather than 1/p*100=2.7)
-R=pca5$val4 #correlation matrix
+pca5=PCA(Player_Attributes_quant_mean[,-1],order=5)
+FF=pca5$FF #contributions of the players to the axes (It should be interesting to visualize the positions of the players in the plane F1-F2)
+G=pca5$G #contributions of the variables to the axes (rule of thumb : We only keep the contributions greather than 1/p*100=2.7)
+R=pca5$R #correlation matrix
 
-p=dim(Player_Attributes_quant_mean)[2]
+p=dim(Player_Attributes_quant_mean[,-1])[2]
+order=dim(G)[2]
 ctrvariables=matrix(NA,nrow=p,ncol=order)
 for (i in 1:order)
 {
@@ -359,16 +220,8 @@ for (i in 1:order)
   print(Importantctr[Importantctr>0])
 }
 
-pairs(F)
+pairs(FF)
 
-library(psych)
-?principal
 
-pca2=principal(r=R,nfactors=5,rotate="varimax",scores=T)
-#If we choose 5 components, the same proportion of the inertia is explained/ capturated
-
-pca2$loadings
-
-#A lot of variables still contribute to each axis , it brings nothing to use the function
 
 
