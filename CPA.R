@@ -55,9 +55,43 @@ G=pca$G #contributions of the variables to the axes (rule of thumb : We only kee
 R=pca$R #correlation matrix
 
 # Creating rotations
+List_loadings = list(No_Rotation_PCA = pca$G,
+                     
+  varimax_rotation_PCA  = varimax((pca$G)*-1)$loadings[,] , 
+                     varimax_rotation_PCA2 = varimax((pca2$G)*-1),)
+varimax_rotation_PCA = varimax((pca$G)*-1) #4 Components rotated
+varimax_rotation_PCA2 = varimax((pca2$G)*-1) #2 Components rotated
 
-pca$G * -1
-varimax_rotation_PCA = varimax( (pca$G)*-1)
+varimax((pca$G)*-1)$loadings[,]
+
+# Functions for naming columns
+PC_loadings = varimax_rotation_PCA2$loadings[,]
+rotated = F
+name_pca = function(PC_loadings,rotated = F){ 
+  PC_loadings_new = PC_loadings
+  nr_components = ncol(PC_loadings)
+  PC_or_RC = ifelse(rotated,"RC","PC")
+  Numbers = 1:nr_components
+  colnames(PC_loadings_new) = paste(PC_or_RC,nr_components,Numbers,sep = "_")
+  rownames(PC_loadings_new) = colnames(quant)[-1]
+  return(PC_loadings_new)
+}
+
+
+
+
+paste(1:5,"A")
+
+rep("PCA_",5)
+
+paste(rep("PC_",ncol(pca2$G)),1:ncol(pca2$G),sep="")
+
+
+Loadings_Data_Frame = (pca$G, pca2$G
+  ,varimax_rotation_PCA$loadings[,],varimax_rotation_PCA2$loadings[,])
+
+
+
 varimax_player_loadings = as.matrix(Player_Attributes_quant_mean)[,-1] %*% as.matrix(varimax_rotation_PCA$loadings[,])
 
 
@@ -66,7 +100,6 @@ worst_player = rep(1,times = 28)
 
 best_player_score = best_player %*% as.matrix(varimax_rotation_PCA$loadings[,])
 
-varimax_player_loadings
 
 #Using the Psych package to check the results
 pca_psych =  principal(r =Player_Attributes_quant_mean[,-1],nfactors = 4, rotate = "varimax" )
