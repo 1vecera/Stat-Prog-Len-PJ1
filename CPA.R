@@ -88,36 +88,24 @@ List_loadings = mapply(name_pca,List_loadings,c("NR","NR","VR","VR")) #Applying 
 DF_Loadings = do.call(cbind, List_loadings)
 
 # Create Scores for each player
-<<<<<<< HEAD
 
-
-=======
->>>>>>> a2f7ca6ab3e2643ed2e81bf481734448cf630f62
 
 
 DF_Player_Scores = as.matrix(Player_Attributes_quant_mean)[,-1] %*% as.matrix(DF_Loadings)
 row.names(DF_Player_Scores) = Player_Attributes_quant_mean[,1]
 
-<<<<<<< HEAD
-#Scores on each component for the best and worst player possible
 
-best_player_score = rep(100,times = 28) %*% as.matrix(DF_Loadings)
-worst_player_score = rep(1,times = 28)  %*% as.matrix(DF_Loadings)
+
 
 # # Save the data - uncoment if needed.
 
 # saveRDS(DF_Player_Scores, file = "DF_Player_Scores.rds")
 # saveRDS(DF_Loadings, file = "DF_Loadings.rds")
-=======
-
-DF_Player_Scores = as.matrix(Player_Attributes_quant_mean)[,-1] %*% as.matrix(DF_Loadings)
-row.names(DF_Player_Scores) = Player_Attributes_quant_mean[,1]
 
 #Scores on each component for the best and worst player possible
-
 best_player_score = rep(100,times = 28) %*% as.matrix(DF_Loadings)
 worst_player_score = rep(1,times = 28)  %*% as.matrix(DF_Loadings)
->>>>>>> a2f7ca6ab3e2643ed2e81bf481734448cf630f62
+
 
 
 #Using the Psych package to check the results
