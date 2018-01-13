@@ -54,51 +54,56 @@ FF=pca$FF #contributions of the players to the axes (It should be interesting to
 G=pca$G #contributions of the variables to the axes (rule of thumb : We only keep the contributions greather than 1/p*100=2.7)
 R=pca$R #correlation matrix
 
-# Creating rotations
-List_loadings = list(No_Rotation_PCA = pca$G,
-                     
-  varimax_rotation_PCA  = varimax((pca$G)*-1)$loadings[,] , 
-                     varimax_rotation_PCA2 = varimax((pca2$G)*-1),)
-varimax_rotation_PCA = varimax((pca$G)*-1) #4 Components rotated
-varimax_rotation_PCA2 = varimax((pca2$G)*-1) #2 Components rotated
+# Rotations ---------------------------------------------------------------
 
-varimax((pca$G)*-1)$loadings[,]
 
-# Functions for naming columns
-PC_loadings = varimax_rotation_PCA2$loadings[,]
-rotated = F
-name_pca = function(PC_loadings,rotated = F){ 
+List_loadings = list(No_Rotation_PCA = (pca$G*-1), No_Rotation_PCA2 = (-pca2$G*-1), #Not Rotated loadings first and second part
+                    varimax_rotation_PCA  = varimax((pca$G)*-1)$loadings[,] , #Rotated loadings
+                     varimax_rotation_PCA2 = varimax((pca2$G)*-1)$loadings[,] #Rotated loadings
+                    )
+
+
+
+
+
+
+# Functions for naming columns and rows
+
+name_pca = function(PC_loadings,rotatation_name = "NR" ){ 
   PC_loadings_new = PC_loadings
   nr_components = ncol(PC_loadings)
-  PC_or_RC = ifelse(rotated,"RC","PC")
+  PC_or_RC = ifelse(rotatation_name == "NR","PC","RC")
   Numbers = 1:nr_components
-  colnames(PC_loadings_new) = paste(PC_or_RC,nr_components,Numbers,sep = "_")
+  colnames(PC_loadings_new) = paste(PC_or_RC, rotatation_name,
+                                    paste("NrCol",nr_components,sep=""),
+                                    Numbers,
+                                    sep = "_")
   rownames(PC_loadings_new) = colnames(quant)[-1]
   return(PC_loadings_new)
 }
 
 
+# Applying this function on the list
+List_loadings = mapply(name_pca,List_loadings,c("NR","NR","VR","VR")) #Applying the function name_PCA with different arguemnts
+DF_Loadings = do.call(cbind, List_loadings)
 
-
-paste(1:5,"A")
-
-rep("PCA_",5)
-
-paste(rep("PC_",ncol(pca2$G)),1:ncol(pca2$G),sep="")
-
-
-Loadings_Data_Frame = (pca$G, pca2$G
-  ,varimax_rotation_PCA$loadings[,],varimax_rotation_PCA2$loadings[,])
+# Create Scores for each player
 
 
 
-varimax_player_loadings = as.matrix(Player_Attributes_quant_mean)[,-1] %*% as.matrix(varimax_rotation_PCA$loadings[,])
 
+DF_Player_Scores = as.matrix(Player_Attributes_quant_mean)[,-1] %*% as.matrix(DF_Loadings)
+row.names(DF_Player_Scores) = Player_Attributes_quant_mean[,1]
 
-best_player = rep(100,times = 28)
-worst_player = rep(1,times = 28)
+#Scores on each component for the best and worst player possible
 
-best_player_score = best_player %*% as.matrix(varimax_rotation_PCA$loadings[,])
+best_player_score = rep(100,times = 28) %*% as.matrix(DF_Loadings)
+worst_player_score = rep(1,times = 28)  %*% as.matrix(DF_Loadings)
+
+# # Save the data - uncoment if needed.
+
+# saveRDS(DF_Player_Scores, file = "DF_Player_Scores.rds")
+# saveRDS(DF_Loadings, file = "DF_Loadings.rds")
 
 
 #Using the Psych package to check the results
