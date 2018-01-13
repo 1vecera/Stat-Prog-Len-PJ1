@@ -27,7 +27,7 @@ if(file.exists("Player_all.rds")){ #Check if the Finished files are in the direc
 #2/We extract the quantitative informations
 
 #We generate here a new database where we average over the several games of each player
-quant=Player_all[,c(4,6,7,11:38)] #We only keep a subset of nonquantitative variables
+quant=Player_all[,c(4,11:38)] #We only keep a subset of nonquantitative variables
 quant=na.omit(quant) #We have to delete the rows containing some missing values #not the best way to do
 L=levels(as.factor(quant$player_fifa_api_id))
 
@@ -42,20 +42,43 @@ Player_Attributes_quant_mean=aggregate(quant,by=list(quant$player_fifa_api_id), 
 source("PCA_Function.R") #Get in the PCA Function created by Julien
 
 
-pca=PCA(Player_Attributes_quant_mean[-1],desiredvariance = 0.75 , order = 5) #All of the attributes without the id
+pca=PCA(Player_Attributes_quant_mean[-1],desiredvariance = 0.8, norm = T, order = 10) #All of the attributes without the id
+pca2 = PCA(Player_Attributes_quant_mean[-1],desiredvariance = 0.75 , order = 2) #Pca with Just 2 parts
+
+
+
+
 
 cum=pca$cum #relative cumsum of the inertia 
 FF=pca$FF #contributions of the players to the axes (It should be interesting to visualize the positions of the players in the plane F1-F2)
 G=pca$G #contributions of the variables to the axes (rule of thumb : We only keep the contributions greather than 1/p*100=2.7)
 R=pca$R #correlation matrix
 
-test =  principal(r =Player_Attributes_quant_mean[,-1],nfactors = 5, rotate = "none" )
+# Creating rotations
+
+pca$G * -1
+varimax_rotation_PCA = varimax( (pca$G)*-1)
+varimax_player_loadings = as.matrix(Player_Attributes_quant_mean)[,-1] %*% as.matrix(varimax_rotation_PCA$loadings[,])
 
 
+best_player = rep(100,times = 28)
+worst_player = rep(1,times = 28)
+
+best_player_score = best_player %*% as.matrix(varimax_rotation_PCA$loadings[,])
+
+varimax_player_loadings
+
+#Using the Psych package to check the results
+pca_psych =  principal(r =Player_Attributes_quant_mean[,-1],nfactors = 4, rotate = "varimax" )
+pca_psych
+
+View(pca_psych$loadings[,])
+View(pca$G)
 #6/Comparison with the normed CPA using the function of R
 
 
 pca1=dudi.pca(Player_Attributes_quant_mean[,-1],center=TRUE,scale=TRUE) #normed PCA
+
 
 ###### Please wait before running further
 inertia=inertia.dudi(pca1, col.inertia=TRUE)
