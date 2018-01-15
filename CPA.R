@@ -55,11 +55,15 @@ G=pca$G #contributions of the variables to the axes (rule of thumb : We only kee
 R=pca$R #correlation matrix
 
 # Rotations ---------------------------------------------------------------
+# Perform the rotations
+
+varimax_rotation_PCA = varimax((pca$G)*-1)
+varimax_rotation_PCA2 = varimax((pca2$G)*-1)
 
 
-List_loadings = list(No_Rotation_PCA = (pca$G*-1), No_Rotation_PCA2 = (-pca2$G*-1), #Not Rotated loadings first and second part
-                    varimax_rotation_PCA  = varimax((pca$G)*-1)$loadings[,] , #Rotated loadings
-                     varimax_rotation_PCA2 = varimax((pca2$G)*-1)$loadings[,] #Rotated loadings
+List_loadings = list(No_Rotation_PCA = (pca$G*-1), No_Rotation_PCA2 = (pca2$G*-1), #Not Rotated loadings first and second part
+                     varimax_rotation_PCA =  varimax_rotation_PCA$loadings[,] , #Rotated loadings
+                     varimax_rotation_PCA2 =   varimax_rotation_PCA2$loadings[,] #Rotated loadings
                     )
 
 
@@ -69,29 +73,40 @@ List_loadings = list(No_Rotation_PCA = (pca$G*-1), No_Rotation_PCA2 = (-pca2$G*-
 
 # Functions for naming columns and rows
 
-name_pca = function(PC_loadings,rotatation_name = "NR" ){ 
+name_pca = function(PC_loadings,rotation_name = "NR"){ 
   PC_loadings_new = PC_loadings
   nr_components = ncol(PC_loadings)
-  PC_or_RC = ifelse(rotatation_name == "NR","PC","RC")
+  PC_or_RC = ifelse(rotation_name == "NR","PC","RC")
   Numbers = 1:nr_components
-  colnames(PC_loadings_new) = paste(PC_or_RC, rotatation_name,
+  colnames(PC_loadings_new) = paste(PC_or_RC, rotation_name,
                                     paste("NrCol",nr_components,sep=""),
                                     Numbers,
                                     sep = "_")
-  rownames(PC_loadings_new) = colnames(quant)[-1]
   return(PC_loadings_new)
 }
 
 
 # Applying this function on the list
+
 List_loadings = mapply(name_pca,List_loadings,c("NR","NR","VR","VR")) #Applying the function name_PCA with different arguemnts
+
 DF_Loadings = do.call(cbind, List_loadings)
-
-# Create Scores for each player
-
+rownames(DF_Loadings) = colnames(quant)[-1]
 
 
-DF_Player_Scores = as.matrix(Player_Attributes_quant_mean)[,-1] %*% as.matrix(DF_Loadings)
+# Create Scores for each player Attention - minus has to go away
+
+List_scores = list(No_Rotation_PCA  = -pca$FF,
+                   No_Rotation_PCA2 = -pca2$FF,
+                   varimax_rotation_PCA = -pca$FF %*% varimax_rotation_PCA$rotmat, #Rotate the scores
+                   varimax_rotation_PCA2 =  -pca2$FF %*% varimax_rotation_PCA2$rotmat) #Rotate the scores
+
+# Apply the naming functions
+
+
+List_scores = mapply(name_pca,List_scores,c("NR","NR","VR","VR"))
+DF_Player_Scores = do.call(cbind, List_scores)
+
 row.names(DF_Player_Scores) = Player_Attributes_quant_mean[,1]
 
 
@@ -99,8 +114,8 @@ row.names(DF_Player_Scores) = Player_Attributes_quant_mean[,1]
 
 # # Save the data - uncoment if needed.
 
-# saveRDS(DF_Player_Scores, file = "DF_Player_Scores.rds")
-# saveRDS(DF_Loadings, file = "DF_Loadings.rds")
+ # saveRDS(DF_Player_Scores, file = "DF_Player_Scores.rds")
+ # saveRDS(DF_Loadings, file = "DF_Loadings.rds")
 
 #Scores on each component for the best and worst player possible
 best_player_score = rep(100,times = 28) %*% as.matrix(DF_Loadings)
@@ -231,6 +246,6 @@ for (i in 1:order)
 }
 
 
-
-
+varimax(pca$G)
+View(principal)
 
