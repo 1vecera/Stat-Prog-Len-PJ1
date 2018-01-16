@@ -40,10 +40,10 @@ Player_latest$age = as.numeric(Player_latest$age)
 Player_latest[,3:42] = data.frame(scale(Player_latest[,3:42]))
 
 wss = (nrow(Player_latest)-1)*sum(apply(Player_latest,2,var))
-for (i in 2:15) wss[i] <- sum(kmeans(Player_latest, 
+for (i in 2:15) wss[i] = sum(kmeans(Player_latest, 
                                      centers=i)$withinss)
 bss = (nrow(Player_latest)-1)*sum(apply(Player_latest,2,var))
-for (i in 2:15) bss[i] <- sum(kmeans(Player_latest, 
+for (i in 2:15) bss[i] = sum(kmeans(Player_latest, 
                                      centers=i)$betweenss)
 
 plot(1:15, wss/(wss+bss), type="b", xlab="Number of Clusters",
@@ -75,3 +75,5 @@ plot(Player.hclust)
 grouping = cutree(Player.hclust,3)
 Player_hclust = data.frame(Player_latest,grouping)
 table(grouping)
+
+# evaluating hclust
