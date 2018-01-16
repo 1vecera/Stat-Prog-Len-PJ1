@@ -1,4 +1,4 @@
-##### Last modified by Jessie at 1:00am on 13 Dec
+##### Last modified by Jessie at 1:00am on 15 Jan
 ##### 
 ##### Hi all, I have done some basic data preparation,
 ##### including converting variables into correct data types,
