@@ -37,7 +37,7 @@ Player_mean = readRDS("Player_Attributes_quant_mean.rds")
 # Determine number of clusters by within group sum of squares
 Player_mean[c("player_name", "date_recorded", "birthday", "player_fifa_api_id")] = NULL
 # Player_mean$age = as.numeric(Player_mean$age)
-Player_mean[,2:29] = data.frame(scale(Player_mean[,2:29]))
+Player_mean[,2:28] = data.frame(scale(Player_mean[,2:28]))
 
 wss = (nrow(Player_mean)-1)*sum(apply(Player_mean,2,var))
 for (i in 2:15) wss[i] = sum(kmeans(Player_mean, 
@@ -51,9 +51,9 @@ plot(1:15, wss/(wss+bss), type="b", xlab="Number of Clusters",
 abline(a = 0.2, b = 0, col = "red")
 
 # K-Means Cluster Analysis
-fit = kmeans(Player_mean[,2:29], 3) # 5 cluster solution
+fit = kmeans(Player_mean[,2:28], 3) # 3 cluster solution
 # get cluster means 
-aggregate(Player_mean[,2:29],by=list(fit$cluster),FUN=mean)
+aggregate(Player_mean[,2:28],by=list(fit$cluster),FUN=mean)
 # append cluster assignment
 Player_kmean = data.frame(Player_mean, fit$cluster)
 

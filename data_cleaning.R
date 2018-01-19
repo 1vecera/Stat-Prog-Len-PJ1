@@ -55,8 +55,8 @@ Player_Attributes$preferred_foot =NULL
 
 Player_Attributes$id = NULL
 Player_all = inner_join(Player, Player_Attributes)
-Player_all$attacking_work_rate = NULL
-Player_all$defensive_work_rate = NULL
+Player_all$attacking_work_rate = NULL     # Ambiguous levels
+Player_all$defensive_work_rate = NULL     # Ambiguous levels
   # add two more features by subtracting columns: age, BMI of player
 Player_all$age = round(difftime(Player_all$date_recorded, Player_all$birthday, units = "weeks") /52)
 Player_all$BMI = round((Player_all$weight * 0.453592) / (Player_all$height/ 100)^2, digits = 3)
