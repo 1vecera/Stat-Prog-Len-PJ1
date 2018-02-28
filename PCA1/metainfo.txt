@@ -1,0 +1,13 @@
+Name of Quantlet: SPL_Analaysis_of_a_Fifa_DataSet_PCA1
+
+Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Data set
+
+Description: 'The PCA helps to summarize a quantitative dataset with many variables: see the correlations between the variables ,represent the p-dimensional point cloud of indivuals (here the players) by projecting them on spaces of smaller dimension ,construct new variables called principal components that are uncorrelated and that synthesize information.'
+
+Keywords: PCA,reduction of the dimension, quantitative variables
+
+Author: Julien Kraemer
+
+See also: other Quantlets in this project
+
+Submitted: 14.03.2018
