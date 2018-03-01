@@ -5,30 +5,19 @@
 
 ```yaml
 
-Name of QuantLet : XFGiv05
+Name of Quantlet: SPL_Analaysis_of_a_Fifa_DataSet_PCA1
 
-Published in : Applied Quantitative Finance
+Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Data set
 
-Description : 'Displays first and second eigenvectors of the VDAX index for the ATM implied
-volatility data (implvola.dat). Taking only the first two factors, the time series of implied ATM
-volatilities can be represented by a factor model of reduced dimension: x(t,j) = gamma(j,1)*y(t,1)
-+ gamma(j,2)*y(t,2) + epsilon(t). gamma(j) are sensitivities of the implied volatility time series
-to shocks of the principal components. A shock of the first factor tends to affect all maturities
-in a similar way, causing a non-parallel shift of the term structure. A shock of the second factor,
-on the other hand, has a strong negative impact on the front maturity but a positive impact on the
-longer ones, thus causing a change of curvature in the term structure of implied volatilities.'
+Description: 'The PCA helps to summarize a quantitative dataset with many variables: see the correlations between the variables ,represent the p-dimensional point cloud of indivuals (here the players) by projecting them on spaces of smaller dimension ,construct new variables called principal components that are uncorrelated and that synthesize information.'
 
-Keywords : 'covariance, dimension-reduction, eigenvalues, eigenvectors, factor-loadings,
-factor-model, implied-volatility, pca, principal-component-analysis, principal-components,
-spectral-decomposition'
+Keywords: PCA,reduction of the dimension, quantitative variables
 
-See also : XFGLSK, XFGiv00, XFGiv01, XFGiv02, XFGiv03, XFGiv04, XFGiv06
+Author: Julien Kraemer
 
-Author : Awdesch Melzer
+See also: other Quantlets in this project
 
-Submitted : Wed, May 28 2014 by Awdesch Melzer
-
-Datafiles : implvola.dat
+Submitted: 14.03.2018
 
 ```
 
