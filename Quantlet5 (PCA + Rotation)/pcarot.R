@@ -8,13 +8,13 @@ if(file.exists("Player_all.rds")){ #Check if the Finished files are in the direc
 
 
 #2/We extract the quantitative informations
-
+View(Player_all)
 #We generate here a new database where we average over the several games of each player
-quant=Player_all[,c(4,11:38)] #We only keep a subset of nonquantitative variables
+quant=Player_all[,c(2,11:38)] #We only keep a subset of nonquantitative variables
 quant=na.omit(quant) #We have to delete the rows containing some missing values #not the best way to do
-L=levels(as.factor(quant$player_fifa_api_id))
+L=levels(as.factor(quant$player_api_id))
 
-Player_Attributes_quant_mean=aggregate(quant,by=list(quant$player_fifa_api_id), mean)[-1]
+Player_Attributes_quant_mean=aggregate(quant,by=list(quant$player_api_id), mean)[-1]
 
 
 
@@ -40,10 +40,6 @@ List_loadings = list(No_Rotation_PCA = (pca$G*-1), No_Rotation_PCA2 = (pca2$G*-1
                      varimax_rotation_PCA =  varimax_rotation_PCA$loadings[,] , #Rotated loadings
                      varimax_rotation_PCA2 =   varimax_rotation_PCA2$loadings[,] #Rotated loadings
 )
-
-
-
-
 
 
 # Functions for naming columns and rows
@@ -85,11 +81,11 @@ DF_Player_Scores = do.call(cbind, List_scores)
 row.names(DF_Player_Scores) = Player_Attributes_quant_mean[,1]
 
 View(DF_Player_Scores)
-
+View(Player_Attributes_quant_mean)
 
 #Create data subset for the graphs with player names 
 DF_Player_Scores_VR12 = data.frame(Player_Attributes_quant_mean[1],(DF_Player_Scores[,c(7,8)]))
-DF_Player_Scores_VR12 = left_join( x= DF_Player_Scores_VR12, y= Player_all[,3:4], by = "player_fifa_api_id")
+DF_Player_Scores_VR12 = left_join( x= DF_Player_Scores_VR12, y= Player_all[,3:4], by = "player_api_id")
 DF_Player_Scores_VR12 =  unique ( DF_Player_Scores_VR12)
 
  saveRDS(DF_Player_Scores_VR12, file= "DF_Player_Scores_VR12.rds")
@@ -97,7 +93,7 @@ DF_Player_Scores_VR12 =  unique ( DF_Player_Scores_VR12)
  saveRDS(DF_Loadings, file = "DF_Loadings.rds")
  
  # Data Export Jessie ------------------------------------------------------
- 
+ View(Player_Attributes_quant_mean)
  
  
  DF_Player_Scores_VR14 = data.frame(Player_Attributes_quant_mean[1],(DF_Player_Scores[,c(7:10)]))
