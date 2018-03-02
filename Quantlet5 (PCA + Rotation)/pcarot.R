@@ -1,3 +1,5 @@
+library(dplyr)
+
 #We load the table Player_all
 if(file.exists("Player_all.rds")){ #Check if the Finished files are in the directory
   Player_all = readRDS("Player_all.rds")
@@ -85,7 +87,20 @@ row.names(DF_Player_Scores) = Player_Attributes_quant_mean[,1]
 View(DF_Player_Scores)
 
 
-# # Save the data - uncoment if needed.
+#Create data subset for the graphs with player names 
+DF_Player_Scores_VR12 = data.frame(Player_Attributes_quant_mean[1],(DF_Player_Scores[,c(7,8)]))
+DF_Player_Scores_VR12 = left_join( x= DF_Player_Scores_VR12, y= Player_all[,3:4], by = "player_fifa_api_id")
+DF_Player_Scores_VR12 =  unique ( DF_Player_Scores_VR12)
 
-# saveRDS(DF_Player_Scores, file = "DF_Player_Scores.rds")
-# saveRDS(DF_Loadings, file = "DF_Loadings.rds")
+ saveRDS(DF_Player_Scores_VR12, file= "DF_Player_Scores_VR12.rds")
+ saveRDS(DF_Player_Scores, file = "DF_Player_Scores.rds")
+ saveRDS(DF_Loadings, file = "DF_Loadings.rds")
+ 
+ # Data Export Jessie ------------------------------------------------------
+ 
+ 
+ 
+ DF_Player_Scores_VR14 = data.frame(Player_Attributes_quant_mean[1],(DF_Player_Scores[,c(7:10)]))
+ View(DF_Player_Scores_VR14)
+ saveRDS(DF_Player_Scores_VR14, file = "Data_Players_Match_Predictions.rds")
+
