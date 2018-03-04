@@ -50,4 +50,4 @@ lapply (Match , num_na )
 avg_num_na = function ( column ) { return (sum(is.na( column ) ) /22) }
 Match [ ,c (3 ,10:31) ] %>% split (. $season ) %>% map( avg_num_na )
 
-Match_without0809 = subset (Match , as.character ( season ) !=" 2008/2009")
+Match_without0809 = subset (Match , as.character ( season ) !=" 2008/2009") 
