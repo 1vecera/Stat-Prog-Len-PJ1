@@ -13,8 +13,8 @@ Player_Attributes = tbl_df ( dbGetQuery (con , " SELECT * FROM
 
 Player$birthday = as.Date( Player$birthday )
 colnames ( Player_Attributes ) [4] = " date_recorded "
-Player_all$attacking_work_rate = NULL
-Player_all$defensive_work_rate = NULL
+Player_Attributes$attacking_work_rate = NULL     # Ambiguous levels
+Player_Attributes$defensive_work_rate = NULL     # Ambiguous levels
 Player_Attributes$date_recorded = as.Date(Player_Attributes$date_recorded )
 group1 = Player_Attributes [ unlist ( lapply ( Player_Attributes ,
                                                   function (X) sum(is.na(X) )== 836) ) ]

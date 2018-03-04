@@ -39,6 +39,8 @@ colnames(Player_Attributes)[4] = "date_recorded"
 Player_Attributes$date_recorded = as.Date(Player_Attributes$date_recorded)
   # check if some data missed certain attribute constantly
   # gather all columns with 836 NA's
+Player_Attributes$attacking_work_rate = NULL     # Ambiguous levels
+Player_Attributes$defensive_work_rate = NULL     # Ambiguous levels
 group1 = Player_Attributes[unlist(lapply(Player_Attributes, function(X) sum(is.na(X))==836))]
   # get a data frame of one rows containing
 test = subset(group1, is.na(group1$overall_rating))
@@ -65,12 +67,7 @@ Player_Attributes$preferred_foot =NULL
 
 Player_Attributes$id = NULL
 Player_all = inner_join(Player, Player_Attributes)
-Player_all$attacking_work_rate = NULL     # Ambiguous levels
-Player_all$defensive_work_rate = NULL     # Ambiguous levels
-  # add two more features by subtracting columns: age, BMI of player
-Player_all$age = round(difftime(Player_all$date_recorded, Player_all$birthday, units = "weeks") /52)
-Player_all$BMI = round((Player_all$weight * 0.453592) / (Player_all$height/ 100)^2, digits = 3)
-
+saveRDS(Player_all, "Player_all.rds")
 
 ##### joining Team & Team_Attribute to form Team_all
 Team_Attributes$id = NULL
