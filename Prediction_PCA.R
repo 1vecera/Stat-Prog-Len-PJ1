@@ -10,7 +10,7 @@ con = dbConnect(SQLite(), dbname="database.sqlite")
 Match = tbl_df(dbGetQuery(con,"SELECT * FROM Match"))
   
 Match = as.data.table(Match)
-View(Match)
+
 #Get out just subset of columns we will use
 #Mostly only the player ids and other parts
 Match_filter = Match[,c(1,2,4,6,7,10,11,44,55,56:77)]
@@ -20,7 +20,7 @@ Match_filter = na.omit(Match_filter) #Get rid of matches with missing values and
 Match_filter = Match_filter[season != "2008/2009"]
 
 #Now we can start joining in the results of the pca analysis
-Match_filter
+
 Data_players = data.table(readRDS("Data_players_Match_predictions.rds"))
 
 #We use the different columns to get the data together
@@ -52,14 +52,11 @@ merge_df_clean = data.table(na.omit(merge_df_clean)) #Get rid of circa 1000 rows
 
 merge_df_clean[home_team_goal > away_team_goal, home_team_win:= T ]
 merge_df_clean[!home_team_goal > away_team_goal, home_team_win:= F ]
-merge_df_clean$home_team_win = as.factor(merge_df_clean$home_team_win)
 #In order to calculate the synergy effects, we also calculte the intern term for each teams for each subpart
 
 subset_RC_Columns = merge_df_clean[,grepl("RC_",names(merge_df_clean)),with = F]
 subset_RC_Columns_home = subset_RC_Columns[,grepl("home_",names(subset_RC_Columns)),with = F]
 subset_RC_Columns_away = subset_RC_Columns[,!grepl("home_",names(subset_RC_Columns)),with = F]
-
-rowMeans(x = subset_RC_Columns_home[,grepl("4_1",names(subset_RC_Columns_home)),with = F])
 
 Principal_Components_Means_List = list()
 
@@ -80,7 +77,7 @@ Principal_Components_Means_DT = do.call(cbind.data.frame,Principal_Components_Me
 #Sorting the data to have first home and than away columns
 Principal_Components_Means_DT = Principal_Components_Means_DT[,sort(names(Principal_Components_Means_DT),decreasing = T)]
 
-View(Principal_Components_Means_DT)
+
 #Join the final data together, want just the result, the prediction columns and id so we have something to check if it does make sense
 prediction_data_fin = data.table(merge_df_clean[,c(1,33:length(merge_df_clean)),with = F])
 
@@ -116,10 +113,8 @@ for (i in paste0("4_",1:4)){ #Getting one after each other the columns out we re
 }  
 
 
-interaction_terms
 
-paste0(a,collapse = ":")
-paste()
+
 
 thrid_reg = glm(prediction_data_fin$home_team_win ~ .*.,
                 data = Principal_Components_Means_DT,
@@ -139,24 +134,16 @@ formula = formula(interaction_terms)
 test= auc(response = merge_df_clean$home_team_win, predictor = first_reg$fitted.values)
 test2= auc(response = merge_df_clean$home_team_win, predictor = second_reg$fitted.values)
 test3= auc(response = merge_df_clean$home_team_win, predictor = thrid_reg$fitted.values)
-test3;test2;test
-
-
-#####Ridge Regression
-
-a = rnorm(200)
-b = a + rnorm(n =200)
-c = a + rnorm(n =200)*0.8
-d = a + rnorm(n =200)*0.6
-
-e = ifelse(a < -0.5,"A",
-  ifelse(a<0, "B","C"))
+test4= auc(response = merge_df_clean$home_team_win, predictor = fourth_reg$fitted.values)
+test4;test3;test2;test
 
 
 
-test_data = data.frame(b,c,d,e)
 
-ridge_regression = function(formula, lambda = 0, data, mse_only = F) {
+#Calculate log likelyhood
+
+set.seed(123, "")
+ridge_regression = function(formula, lambda = 0, data) {
 
   X = model.matrix(object = formula, data = data)
   y = data[[formula[[2]]
@@ -170,61 +157,92 @@ ridge_regression = function(formula, lambda = 0, data, mse_only = F) {
 
 }
 
-i = ridge_regression(formula = b ~ d:c + d + c + e, data= test_data, lambda = 1000000 )
+i = ridge_regression(formula = b ~ d:c + d + c + e, data= test_data, lambda = 10 )
+i2 = cross_validation(fct = ridge_regression ,formula = b ~ d:c + d + c + e, data= test_data, lambda = 2)
 
 
 
-cross_validation = function(fct, measurement_location = "predictions", ntimes = 5, data,...){
+a = optimize(cross_validation, interval = c(0,10000), fct = ridge_regression,
+         formula = b ~ d:c + d + c + e, data= test_data,beta_location = "Beta", tol = 0.000001, ntimes = 5 )
+
+
+res=c() 
+for (i in 0:100){
+set.seed(123)
+mse = cross_validation(fct = ridge_regression ,formula = b ~ d:c + d + c + e, data= test_data, lambda = i)
+res = c(res,mse )
+}
+plot(res)
+
+calc_missclaf_errof = function(threshold_int, prob, truth) {
+  predictions_test_response  =  ifelse(prob > threshold_int, 1,0 ) 
+  correctly_classified       =  sum(diag(
+    prop.table(table(predictions_test_response,truth)))) 
+  return(correctly_classified)
+}
+
+
+cross_validation = function(fct, beta_location = "Beta", ntimes = 5, data, formula,...){
   splits = sample(x = 1:ntimes, size = nrow(data), replace = T)
   res_array = c()
   for (i in 1:ntimes){
-  train_data = data[!splits == i]  
-  res_loc  = fct(..., data = split_data)
-  res_array = c(res_glob,res_loc)
+    train_data = data[!splits == i,]  
+    res_loc    = fct(formula = formula,..., data = train_data)
+    test_data  = data[splits == i,]  
+    X_test = model.matrix(object = formula, data = test_data)
+    y_test = test_data[[formula[[2]]
+              ]]
+    predictions_test = X_test %*% res_loc[[beta_location]]
+    opt_pcc = optimise(calc_missclaf_errof,interval = c(0,1), maximum = T,
+                       tol = 0.01, prob = predictions_test, truth = y_test)
+    res_array = c(res_array, opt_pcc[[2]])
+  # SSR_test= t((y_test- predictions_test)) %*% (y_test - predictions_test)
+  # MSE_test = SSR_test/length(y_test)
+  # res_array = c(res_array,MSE_test)
   }
 return(mean(res_array))
-  
 }
 
 
 
-a = sample(1:4, size = 100, replace = T)
-i = 2
-a == i
 
 
 
 
+###Applying the ridge ression to our other problem
 
+ridge_model = ridge_regression(home_team_win ~ . - id,
+                               data = prediction_data_fin, lambda = 0)
 
+optimise(calc_missclaf_errof,interval = c(0,1),maximum = T,
+                   tol = 0.01, prob = ridge_model$predictions, truth = prediction_data_fin$home_team_win)
 
+calc_missclaf_errof(prob = ridge_model$predictions,
+                    truth = prediction_data_fin$home_team_win, threshold_int = 0.7)
 
+ridge_cv_err = cross_validation(fct = ridge_regression, formula = home_team_win ~ . - id, ntimes = 4, data = prediction_data_fin,
+                                beta_location = "Beta", lambda = 0)
+optimise(cross_validation )
 
+lambdas = c(c(1,4,7) %o% 10^(0:4))
 
+pcc_array = c()
+for (i in lambdas
+     # seq(from = 0, to= 100,length.out = 10 )
+     ){
+  set.seed(123)
+  pcc = cross_validation(fct = ridge_regression, formula = home_team_win ~ . - id, ntimes = 3, data = prediction_data_fin,
+                   beta_location = "Beta", lambda = i)
+  pcc_array = c(pcc_array,pcc )
+  }
+qplot(lambdas,pcc_array)
 
+library(ggplot2)
 
-
-
-i
-
-
-model.matrix()
-
-
-
-
-typeof(quote(x * 10))
-class(Principal_Components_Means_DT)
-
-
-Beta = solve(t(X) %*% X + lambda) %*% t(X) %*%  y
-Predictions = X %*% Beta
-SSR= t((y- Predictions)) %*% (y- Predictions)
-SSR/length(y)
-
-
-x = matrix()
-y = c(1:100)
-
-
-quote(x*10)
+prop.table(table(prediction_data_fin$home_team_win))
+optimise(calc_missclaf_errof,interval = c(0,1),maximum = T,
+         tol = 0.001, prob = first_reg$fitted.values, truth = prediction_data_fin$home_team_win)
+optimise(calc_missclaf_errof,interval = c(0,1),maximum = T,
+         tol = 0.001, prob = fourth_reg$fitted.values, truth = prediction_data_fin$home_team_win)
+optimise(calc_missclaf_errof,interval = c(0,1),maximum = T,
+         tol = 0.001, prob = second_reg$fitted.values, truth = prediction_data_fin$home_team_win)
