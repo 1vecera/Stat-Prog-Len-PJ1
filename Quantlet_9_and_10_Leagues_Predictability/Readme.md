@@ -9,7 +9,7 @@ Name of Quantlet: SPL_Analaysis_of_a_Fifa_DataSet_Leagues_Predictability
 
 Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Data set
 
-Description: 'In these quantlets we are calculating the predictability of chosen leagues. We are using entropy as a proxy of the level of competitiveness of a certain league or a match. The entropy is calculated on the basis of probabilities which different outcomes of the matches, which are, in its turn, retrieved from the bidding odds provided by a gambling agency.'
+Description: 'In these quantlets we are calculating the predictability of chosen leagues. We are using entropy as a proxy of the level of competitiveness of a certain league or a match. The entropy is calculated on the basis of probabilities which different outcomes of the matches, which are, in its turn, retrieved from the bidding odds provided by a gambling agency.Mean entropy by leagues and teams were also calculated and plotted.'
 
 Keywords: Entropy, competitivness, predictability
 
