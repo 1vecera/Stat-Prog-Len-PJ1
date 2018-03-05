@@ -6,7 +6,7 @@ Description:       Shows factor loadings of first two principal components (PCA 
  
 Keywords:          pca, pca graph, correlation circle, rotation, factor loadings
 
-See also:          SPL_Analaysis_of_a_Fifa_DataSet_PCA, Quantlet5 (PCA + Rotation)
+See also:          Quantlet4-PCA function, Quantlet5 (PCA + Rotation)
 
 Author:            Arna Wömmel
   
