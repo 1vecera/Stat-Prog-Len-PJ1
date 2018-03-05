@@ -25,7 +25,7 @@ Submitted:         14.03.2018
 ```r
 #Descriptive Analysis - Distribution of Variables ------------------------------------------------------------------
 
-#Extracting the quantitative informations
+#Extract the quantitative informations 
 View(Player_all)
 #Generate a new database where we average over the several games of each player
 quant = Player_all[,c(2,11:38)] #We only keep a subset of nonquantitative variables
