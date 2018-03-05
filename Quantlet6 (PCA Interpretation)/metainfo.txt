@@ -2,7 +2,7 @@ Name of Quantlet:  PCA Interpretation
  
 Published in:      Statistical Programming Languages
   
-Description:       Shows factor loadings of first two principal components (PCA and Rotation)
+Description:       'Shows factor loadings of first two principal components (PCA and Rotation)'
  
 Keywords:          pca, pca graph, correlation circle, rotation, factor loadings
 
