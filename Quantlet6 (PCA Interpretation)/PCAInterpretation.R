@@ -18,7 +18,7 @@ DF_Factor_loadings_tidy_raw = as.data.frame(cbind(c("Crossing", "Finishing", "He
 names(DF_Factor_loadings_tidy_raw)[1] = "Att_Name"
 
 DF_Factor_loadings_tidy  = gather(DF_Factor_loadings_tidy_raw
-                                  , key ="Type_Rotation_NrCols_ComponentNumber",
+                                  , key = "Type_Rotation_NrCols_ComponentNumber",
                                   value = "value", - Att_Name) %>%    
                                   separate(Type_Rotation_NrCols_ComponentNumber, into=c("Type","Rotation","Nrcols","ComponentNumber"))%>% 
                                   spread(key = "ComponentNumber", value = "value")
@@ -34,10 +34,10 @@ crossx = geom_hline(yintercept = 0)
 crossy = geom_vline(xintercept = 0)
 
 #Create Plot
-ggplot(data = DF_Factor_loadings_tidy , aes(x= 0 , y= 0, xend= C1, yend = C2, label =Att_Name  )) + 
+ggplot(data = DF_Factor_loadings_tidy , aes(x = 0 , y = 0, xend= C1, yend = C2, label =Att_Name  )) + 
       geom_segment(arrow = arrow(length = unit(0.5, "cm")),alpha = 0.7) +
       crossx + crossy + 
-      geom_text_repel(aes(x= C1*1.00  , y= C2*1.00),
+      geom_text_repel(aes(x = C1*1.00  , y = C2*1.00),
                           nudge_x = 0.03, # nudge_y = 0.03,
                           #position = "jitter",
                           alpha = 1, col= "red") +
