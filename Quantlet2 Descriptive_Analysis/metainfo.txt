@@ -1,0 +1,16 @@
+Name of Quantlet:  Descriptive_Analysis
+ 
+Published in:      Statistical Programming Languages
+  
+Description:       'Shows distribution of variables, i.e. player attributes, by means of three boxplots'
+ 
+Keywords:          boxplot,descriptive analysis, distribution of variables
+
+See also:          Quantlet1_Preprocessing
+
+Author:            Arna Wömmel
+  
+Submitted:         14.03.2018
+  
+
+
