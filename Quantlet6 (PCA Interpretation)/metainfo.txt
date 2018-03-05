@@ -1,4 +1,4 @@
-Name of Quantlet:  PCA_Interpretation
+Name of Quantlet:  PCA Interpretation
  
 Published in:      Statistical Programming Languages
   
@@ -11,6 +11,3 @@ See also:          SPL_Analaysis_of_a_Fifa_DataSet_PCA
 Author:            Arna Wömmel
   
 Submitted:         14.03.2018
-  
-
-
