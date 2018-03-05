@@ -8,7 +8,7 @@ Name of Quantlet: SPL_Analaysis_of_a_Fifa_DataSet_Data_Preprocessing
 
 Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Data set
 
-Description: 'In this quantlet we read the data from a database file into tibble data frames, convert variable types, subset the interesting columns and rows and join data frames for further analysis. 
+Description: 'In this quantlet we read the data from a database file into tibble data frames, convert variable types, subset the interesting columns and rows and join data frames for further analysis. '
 
 Keywords: tibble, group_by, inner_join
 
