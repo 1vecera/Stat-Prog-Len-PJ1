@@ -30,10 +30,10 @@ par(mar = c(2.1,7.1,2.1,2.1))
 
 #Create Boxplot for each category
 Boxplot_Technical = boxplot(Player_Attributes_Technical, horizontal = T, #Technical Attributes
-                           las=1, main = "Player Attributes: Technical", cex.axis = 0.9, col = 'red')
+                           las = 1, main = "Player Attributes: Technical", cex.axis = 0.9, col = 'red')
 
 Boxplot_Mental = boxplot(Player_Attributes_Mental, horizontal = T, #Mental Attributes
-                            las = 1, main = "Player Attributes: Mental", cex.axis = 0.9, col = 'green')
+                         las = 1, main = "Player Attributes: Mental", cex.axis = 0.9, col = 'green')
 
 Boxplot_Physical = boxplot(Player_Attributes_Physical, horizontal = T, #Physical Attributes
-                         las = 1, main = "Player Attributes: Physical", cex.axis = 0.9, col = 'blue')
+                           las = 1, main = "Player Attributes: Physical", cex.axis = 0.9, col = 'blue')
