@@ -114,7 +114,7 @@ for (i in paste0("4_",1:4)){ #We go component by component and create the intera
 
 # Logistic Regression -----------------------------------------------------
 
-#We perfrom logistical regression using the logit function
+#We perform logistical regression using the logit function
 reg_list = list()
 reg_list$reg_no_interact = glm(home_team_win ~ . - id,
                 data = prediction_data_fin,
@@ -133,11 +133,11 @@ for (i in 1:3)  fitted_values_list[[(names(reg_list)[i])]] =  reg_list[[i]][["fi
 sapply(X = fitted_values_list,FUN = auc, response = merge_df_clean$home_team_win) 
 #We need the functions of the quantlet 7
 source("Quantlet7 PredictionFunctions/PredictionFunctions.R")
-#Proving that thrashold optimazation does not bring a lot of value with logit models
-thrashold_opt  = sapply(X = 0:100/101,FUN = calc_ppc,
+#Proving that threshold optimization does not bring a lot of value with logit models
+threshold_opt  = sapply(X = 0:100/101,FUN = calc_ppc,
                         prob = reg_list$reg_no_interact$fitted.values, truth = prediction_data_fin$home_team_win )
-qplot(0:100/101, thrashold_opt, geom = "line" ) + theme_bw() +
-  xlab("Thrashold") + ylab("Percantage correctly Classfied")
+qplot(0:100/101, threshold_opt, geom = "line" ) + theme_bw() +
+  xlab("Threshold") + ylab("Percantage correctly Classfied")
 
 
 # Ridge Regression --------------------------------------------------------
