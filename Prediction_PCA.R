@@ -1,16 +1,16 @@
 #Analysis of the prediction power
 # library(RSQLite)
-# Before export
+# If you instead want to use the database.sqlite file, please connect it
+# Else use the Match and Data Players tables
 # con = dbConnect(SQLite(), dbname="database.sqlite")
 # Match = tbl_df(dbGetQuery(con,"SELECT * FROM Match"))
 
 library(dplyr)
-library(stringr)
 library(data.table)
 library(pROC)
 library(ggplot2)
 
-
+?grepl
 #First we need to make sure we have the right data
 
 Match = readRDS("Match.rds")
@@ -84,10 +84,11 @@ Principal_Components_Means_DT = Principal_Components_Means_DT[,sort(names(Princi
 
 #Join the final data together, want just the result, the prediction columns and id so we have something to check if it does make sense
 prediction_data_fin = data.table(merge_df_clean[,c(1,33:length(merge_df_clean)),with = F])
-
+#We add the means also to the prediction data
+Principal_Components_Means_DT$home_team_win = prediction_data_fin$home_team_win
 #We want to test interaction terms for different teams
 #For each team and each principal component, we want to create the name
-interaction_terms = " home_team_win ~ ."  #We start by string which we used for the first regressiion
+interaction_terms = " home_team_win ~ . - id"  #We start by string which we used for the first regressiion
 for (i in paste0("4_",1:4)){ #We go component by component and create the interaction term
   home_interaction_term = 
       paste0(collapse = ":", #combine the names of the columns with ":" as separator
@@ -103,12 +104,13 @@ for (i in paste0("4_",1:4)){ #We go component by component and create the intera
   
 }
 
+
 #We perfrom logistical regression using the logit function
 reg_list = list()
 reg_list$reg_no_interact = glm(home_team_win ~ . - id,
                 data = prediction_data_fin,
                 family = binomial(link = "logit"))
-reg_list$reg_mean = glm(prediction_data_fin$home_team_win ~ .*.,
+reg_list$reg_mean = glm(home_team_win ~ .*.,
                 data = Principal_Components_Means_DT,
                   family = binomial(link = "logit"))
 reg_list$reg_interact = glm(formula = interaction_terms,
@@ -122,55 +124,61 @@ for (i in 1:3)  fitted_values_list[[(names(reg_list)[i])]] =  reg_list[[i]][["fi
 sapply(X = fitted_values_list,FUN = auc, response = merge_df_clean$home_team_win) 
 #We need the functions of the quantlet 7
 source("Quantlet7_Prediction_Functions/Quantlet7_Prediction_Functions.R")
+#Proving that thrashold optimazation does not bring a lot of value with logit models
+thrashold_opt  = sapply(X = 0:100/101,FUN = calc_ppc,
+                        prob = reg_list$reg_no_interact$fitted.values, truth = prediction_data_fin$home_team_win )
+qplot(0:100/101, thrashold_opt, geom = "line" ) + theme_bw() +
+  xlab("Thrashold") + ylab("Percantage correctly Classfied")
+
 ###Applying the ridge ression to our other problem
 #Use the ridge function to perform naive prediction model
-ridge_model = ridge_regression(home_team_win ~ . - id,
-                               data = prediction_data_fin, lambda = 0)
-optimise()
-#Now we use crossvalidation to return the optimal error and thrashold
 
-ridge_cv_err = cross_validation(fct = ridge_regression, formula = home_team_win ~ . - id,
-                                ntimes = 4, data = prediction_data_fin,
-                                beta_location = "Beta", lambda = 0,return_mean_PPC = F)
+#We search for optimal lamda
 
-ridge_cv_err
-
-optimise(cross_validation )
-
-lambdas = c(c(1,4,7) %o% 10^(0:4))
-
+#We try different lambdas to reduce to coefficent in search of best PCC
+lambdas = c(c(1,4,7) %o% 10^(0:4)) #Outer product to try wide range of lambdas
 pcc_array = c()
 for (i in lambdas
      # seq(from = 0, to= 100,length.out = 10 )
      ){
   set.seed(123)
   pcc = cross_validation(fct = ridge_regression, formula = home_team_win ~ . - id, ntimes = 3, data = prediction_data_fin,
-                   beta_location = "Beta", lambda = i)
+                   beta_location = "Beta", lambda = i, return_mean_PPC = T)
   pcc_array = c(pcc_array,pcc )
-  }
-qplot(lambdas,pcc_array)
+}
 
+qplot(lambdas,pcc_array) + theme_bw() + xlab("Lambda") + ylab("Percantage Correctly Classified")
+#We see that optimal landa will be somewhere between 0 and 30 000
+#We create search for the best lambda
+set.seed(123)
+opt_lam = optimise(f = cross_validation,fct = ridge_regression, formula = home_team_win ~ . - id,
+                           ntimes = 3, data = prediction_data_fin,
+                 beta_location = "Beta", tol = 0.001, interval = c(0,40000), return_mean_PPC = T,
+                 maximum = T)
+#we take the best lambda and look at the results
+ridge_model = ridge_regression(home_team_win ~ . - id,
+                               data = prediction_data_fin, lambda = opt_lam$maximum)
+#Now we use crossvalidation to return the optimal  thrashold and associated PCC
+set.seed(123)
+list_cv_err = list()
+list_cv_err$ridge_cv_err = cross_validation(fct = ridge_regression, formula = home_team_win ~ . - id,
+                                ntimes = 4, data = prediction_data_fin, 
+                                beta_location = "Beta", lambda = opt_lam$maximum,return_mean_PPC = F)
+#Check the train set AUC
+auc(response = prediction_data_fin$home_team_win, predictor = as.numeric(ridge_model$predictions))
+#We perfrom the cross validation also for 2 of the regressions
+#As a last step, calculate 
+set.seed(123)
+list_cv_err$reg_no_interact =
+  cross_validation(fct = glm, formula = home_team_win ~ . - id,
+                                               ntimes = 3, data = prediction_data_fin,
+                                               beta_location = "coefficients", family = binomial(link = "logit"),
+                                               return_mean_PPC = F)
+list_cv_err$reg_no_interact
+set.seed(123)
+list_cv_err$reg_mean        =
+  cross_validation(fct = glm, formula = home_team_win ~ .*.,
+                   ntimes = 3, data = Principal_Components_Means_DT,
+                   beta_location = "coefficients", family = binomial(link = "logit"),
+                   return_mean_PPC = F)
 
-prop.table(table(prediction_data_fin$home_team_win))
-optimise(calc_missclaf_errof,interval = c(0,1),maximum = T,
-         tol = 0.001, prob = reg_no_interact$fitted.values, truth = prediction_data_fin$home_team_win)
-optimise(calc_missclaf_errof,interval = c(0,1),maximum = T,
-         tol = 0.001, prob = reg_interact$fitted.values, truth = prediction_data_fin$home_team_win)
-
-
-
-#C
-
-#Test for the presentation
-
-
-cross_validation_predict(glm,formula = interaction_terms,
-                         data = prediction_data_fin,
-                         family = binomial(link = "logit"))
-
-
-
-
-cross_validation(fct = glm, formula = home_team_win ~ . - id,
-                 ntimes = 3, data = prediction_data_fin,
-                 beta_location = "coefficients", family = binomial(link = "logit"))
