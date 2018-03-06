@@ -1,14 +1,19 @@
 #Analysis of the prediction power
-library(RSQLite)
+# library(RSQLite)
+# Before export
+# con = dbConnect(SQLite(), dbname="database.sqlite")
+# Match = tbl_df(dbGetQuery(con,"SELECT * FROM Match"))
+
 library(dplyr)
 library(stringr)
 library(data.table)
 library(pROC)
+library(ggplot2)
+
 
 #First we need to make sure we have the right data
-con = dbConnect(SQLite(), dbname="database.sqlite")
-Match = tbl_df(dbGetQuery(con,"SELECT * FROM Match"))
-  
+
+Match = readRDS("Match.rds")
 Match = as.data.table(Match)
 
 #Get out just subset of columns we will use
@@ -39,7 +44,7 @@ merge_df_raw = do.call(cbind,merge_list)
 #get rid of columns with api_id as part of them after the controlling them manually 
 id_columns_location = grepl("api_id",names(merge_df_raw))
 merge_df_clean = merge_df_raw[,-id_columns_location,with = F]
-#Add other columns to the data frame
+#Add the original columns from the match data
 Match_filter= Match_filter[order(match_api_id)] #make sure we don't missmatch the data
 if (identical(
   merge_df_raw$home_player_3.match_api_id,
@@ -52,8 +57,7 @@ merge_df_clean = data.table(na.omit(merge_df_clean)) #Get rid of circa 1000 rows
 
 merge_df_clean[home_team_goal > away_team_goal, home_team_win:= T ]
 merge_df_clean[!home_team_goal > away_team_goal, home_team_win:= F ]
-#In order to calculate the synergy effects, we also calculte the intern term for each teams for each subpart
-
+#We wanted to see if the means themselves can be used as predictions factors instead the ones of the single players
 subset_RC_Columns = merge_df_clean[,grepl("RC_",names(merge_df_clean)),with = F]
 subset_RC_Columns_home = subset_RC_Columns[,grepl("home_",names(subset_RC_Columns)),with = F]
 subset_RC_Columns_away = subset_RC_Columns[,!grepl("home_",names(subset_RC_Columns)),with = F]
@@ -81,147 +85,56 @@ Principal_Components_Means_DT = Principal_Components_Means_DT[,sort(names(Princi
 #Join the final data together, want just the result, the prediction columns and id so we have something to check if it does make sense
 prediction_data_fin = data.table(merge_df_clean[,c(1,33:length(merge_df_clean)),with = F])
 
-
-first_reg = glm(home_team_win ~ . - id,
-                data = prediction_data_fin,
-                family = binomial(link = "logit"))
-
-second_reg = glm(prediction_data_fin$home_team_win ~ .,
-                 data = Principal_Components_Means_DT,
-                 family = binomial(link = "logit"))
-
-unlist(names(prediction_data_fin))
-
-a = unlist(names(prediction_data_fin))[grepl("NrCol4_3",names(prediction_data_fin)) & grepl("home",names(prediction_data_fin))]
-grepl("NrCol4_3",names(prediction_data_fin)) & grepl("home",names(prediction_data_fin))
-
-interaction_terms = " home_team_win ~ ."
-
-for (i in paste0("4_",1:4)){ #Getting one after each other the columns out we requre
- 
-  home_interaction_term = paste0(collapse = ":",
-    unlist(names(prediction_data_fin))[grepl(i,names(prediction_data_fin)) &
-                                        grepl("home",names(prediction_data_fin))]
+#We want to test interaction terms for different teams
+#For each team and each principal component, we want to create the name
+interaction_terms = " home_team_win ~ ."  #We start by string which we used for the first regressiion
+for (i in paste0("4_",1:4)){ #We go component by component and create the interaction term
+  home_interaction_term = 
+      paste0(collapse = ":", #combine the names of the columns with ":" as separator
+             unlist(names(prediction_data_fin))[grepl(i,names(prediction_data_fin)) & #columns of the compnent 
+                                                  grepl("home",names(prediction_data_fin))]) #home team
+  away_interaction_term =
+      paste0(collapse = ":", 
+             unlist(names(prediction_data_fin))[grepl(i,names(prediction_data_fin)) & #columns of the compnent
+                !grepl("home",names(prediction_data_fin))]#home team
   )
-  away_interaction_term =  paste0(collapse = ":",
-    unlist(names(prediction_data_fin))[grepl(i,names(prediction_data_fin)) &
-                                         !grepl("home",names(prediction_data_fin))]
-  )
-  
+  #we combine the interaction terms with plus sign
   interaction_terms = paste(interaction_terms, home_interaction_term, away_interaction_term, sep= " + " )
   
-}  
+}
 
-
-
-
-
-thrid_reg = glm(prediction_data_fin$home_team_win ~ .*.,
-                data = Principal_Components_Means_DT,
-                family = binomial(link = "logit"))
-
-fourth_reg = glm(formula = interaction_terms,
+#We perfrom logistical regression using the logit function
+reg_list = list()
+reg_list$reg_no_interact = glm(home_team_win ~ . - id,
                 data = prediction_data_fin,
                 family = binomial(link = "logit"))
-
-
-fourth_reg$coefficients
-
-
-formula = formula(interaction_terms)
-
-
-test= auc(response = merge_df_clean$home_team_win, predictor = first_reg$fitted.values)
-test2= auc(response = merge_df_clean$home_team_win, predictor = second_reg$fitted.values)
-test3= auc(response = merge_df_clean$home_team_win, predictor = thrid_reg$fitted.values)
-test4= auc(response = merge_df_clean$home_team_win, predictor = fourth_reg$fitted.values)
-test4;test3;test2;test
-
-
-
-
-#Calculate log likelyhood
-
-set.seed(123, "")
-ridge_regression = function(formula, lambda = 0, data) {
-
-  X = model.matrix(object = formula, data = data)
-  y = data[[formula[[2]]
-            ]]
-  Beta = solve(t(X) %*% X + diag(x = lambda, ncol = ncol(X), nrow = ncol(X))) %*% t(X) %*%  y
-  predictions = X %*% Beta
-  SSR= t((y- predictions)) %*% (y- predictions)
-  MSE = SSR/length(y)
-  results = list(Beta = Beta, predictions = predictions, SSR = SSR, MSE = MSE  )
-  return(results)
-
-}
-
-i = ridge_regression(formula = b ~ d:c + d + c + e, data= test_data, lambda = 10 )
-i2 = cross_validation(fct = ridge_regression ,formula = b ~ d:c + d + c + e, data= test_data, lambda = 2)
-
-
-
-a = optimize(cross_validation, interval = c(0,10000), fct = ridge_regression,
-         formula = b ~ d:c + d + c + e, data= test_data,beta_location = "Beta", tol = 0.000001, ntimes = 5 )
-
-
-res=c() 
-for (i in 0:100){
-set.seed(123)
-mse = cross_validation(fct = ridge_regression ,formula = b ~ d:c + d + c + e, data= test_data, lambda = i)
-res = c(res,mse )
-}
-plot(res)
-
-calc_missclaf_errof = function(threshold_int, prob, truth) {
-  predictions_test_response  =  ifelse(prob > threshold_int, 1,0 ) 
-  correctly_classified       =  sum(diag(
-    prop.table(table(predictions_test_response,truth)))) 
-  return(correctly_classified)
-}
-
-
-cross_validation = function(fct, beta_location = "Beta", ntimes = 5, data, formula,...){
-  splits = sample(x = 1:ntimes, size = nrow(data), replace = T)
-  res_array = c()
-  for (i in 1:ntimes){
-    train_data = data[!splits == i,]  
-    res_loc    = fct(formula = formula,..., data = train_data)
-    test_data  = data[splits == i,]  
-    X_test = model.matrix(object = formula, data = test_data)
-    y_test = test_data[[formula[[2]]
-              ]]
-    predictions_test = X_test %*% res_loc[[beta_location]]
-    opt_pcc = optimise(calc_missclaf_errof,interval = c(0,1), maximum = T,
-                       tol = 0.01, prob = predictions_test, truth = y_test)
-    res_array = c(res_array, opt_pcc[[2]])
-  # SSR_test= t((y_test- predictions_test)) %*% (y_test - predictions_test)
-  # MSE_test = SSR_test/length(y_test)
-  # res_array = c(res_array,MSE_test)
-  }
-return(mean(res_array))
-}
-
-
-
-
-
-
-
+reg_list$reg_mean = glm(prediction_data_fin$home_team_win ~ .*.,
+                data = Principal_Components_Means_DT,
+                  family = binomial(link = "logit"))
+reg_list$reg_interact = glm(formula = interaction_terms,
+                data = prediction_data_fin,
+                family = binomial(link = "logit"))
+#We get out the fitted values
+fitted_values_list = list()
+for (i in 1:3)  fitted_values_list[[(names(reg_list)[i])]] =  reg_list[[i]][["fitted.values"]] 
+#We test auc for the fitted models: attention - no test train split
+#We use auc from pROC package
+sapply(X = fitted_values_list,FUN = auc, response = merge_df_clean$home_team_win) 
+#We need the functions of the quantlet 7
+source("Quantlet7_Prediction_Functions/Quantlet7_Prediction_Functions.R")
 ###Applying the ridge ression to our other problem
-
+#Use the ridge function to perform naive prediction model
 ridge_model = ridge_regression(home_team_win ~ . - id,
                                data = prediction_data_fin, lambda = 0)
+optimise()
+#Now we use crossvalidation to return the optimal error and thrashold
 
-optimise(calc_missclaf_errof,interval = c(0,1),maximum = T,
-                   tol = 0.01, prob = ridge_model$predictions, truth = prediction_data_fin$home_team_win)
+ridge_cv_err = cross_validation(fct = ridge_regression, formula = home_team_win ~ . - id,
+                                ntimes = 4, data = prediction_data_fin,
+                                beta_location = "Beta", lambda = 0,return_mean_PPC = F)
 
-calc_missclaf_errof(prob = ridge_model$predictions,
-                    truth = prediction_data_fin$home_team_win, threshold_int = 0.7)
+ridge_cv_err
 
-ridge_cv_err = cross_validation(fct = ridge_regression, formula = home_team_win ~ . - id, ntimes = 4, data = prediction_data_fin,
-                                beta_location = "Beta", lambda = 0)
 optimise(cross_validation )
 
 lambdas = c(c(1,4,7) %o% 10^(0:4))
@@ -237,12 +150,27 @@ for (i in lambdas
   }
 qplot(lambdas,pcc_array)
 
-library(ggplot2)
 
 prop.table(table(prediction_data_fin$home_team_win))
 optimise(calc_missclaf_errof,interval = c(0,1),maximum = T,
-         tol = 0.001, prob = first_reg$fitted.values, truth = prediction_data_fin$home_team_win)
+         tol = 0.001, prob = reg_no_interact$fitted.values, truth = prediction_data_fin$home_team_win)
 optimise(calc_missclaf_errof,interval = c(0,1),maximum = T,
-         tol = 0.001, prob = fourth_reg$fitted.values, truth = prediction_data_fin$home_team_win)
-optimise(calc_missclaf_errof,interval = c(0,1),maximum = T,
-         tol = 0.001, prob = second_reg$fitted.values, truth = prediction_data_fin$home_team_win)
+         tol = 0.001, prob = reg_interact$fitted.values, truth = prediction_data_fin$home_team_win)
+
+
+
+#C
+
+#Test for the presentation
+
+
+cross_validation_predict(glm,formula = interaction_terms,
+                         data = prediction_data_fin,
+                         family = binomial(link = "logit"))
+
+
+
+
+cross_validation(fct = glm, formula = home_team_win ~ . - id,
+                 ntimes = 3, data = prediction_data_fin,
+                 beta_location = "coefficients", family = binomial(link = "logit"))
