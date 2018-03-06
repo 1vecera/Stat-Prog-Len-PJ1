@@ -1,4 +1,4 @@
-Name of Quantlet:  Descriptive_Analysis
+Name of Quantlet:  DescriptiveAnalysis
  
 Published in:      Statistical Programming Languages
   
