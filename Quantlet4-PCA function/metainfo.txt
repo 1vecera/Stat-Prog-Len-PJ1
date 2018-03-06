@@ -1,4 +1,4 @@
-Name of Quantlet: SPL_Analaysis_of_a_Fifa_DataSet_PCA
+Name of Quantlet: PCA function
 
 Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Data set
 
