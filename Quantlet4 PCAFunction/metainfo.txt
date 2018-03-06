@@ -1,4 +1,4 @@
-Name of Quantlet: PCA function
+Name of Quantlet: PCAFunction
 
 Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Data set
 
