@@ -1,13 +1,13 @@
 
 [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/banner.png" width="888" alt="Visit QuantNet">](http://quantlet.de/)
 
-## [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/qloqo.png" alt="Visit QuantNet">](http://quantlet.de/) **SPL_Analaysis_of_a_Fifa_DataSet_PCA** [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/QN2.png" width="60" alt="Visit QuantNet 2.0">](http://quantlet.de/)
+## [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/qloqo.png" alt="Visit QuantNet">](http://quantlet.de/) **PCAFunction** [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/QN2.png" width="60" alt="Visit QuantNet 2.0">](http://quantlet.de/)
 
 ```yaml
 
-Name of Quantlet: SPL_Analaysis_of_a_Fifa_DataSet_PCA
+Name of Quantlet: PCAFunction
 
-Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Data set
+Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Dataset
 
 Description: 'The PCA helps to summarize a quantitative dataset with many variables: see the correlations between the variables ,represent the p-dimensional point cloud of indivuals (here the players) by projecting them on spaces of smaller dimension ,construct new variables called principal components that are uncorrelated and that synthesize information.'
 

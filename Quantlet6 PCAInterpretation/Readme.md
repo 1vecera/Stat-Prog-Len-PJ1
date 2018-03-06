@@ -1,10 +1,10 @@
 [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/banner.png" width="888" alt="Visit QuantNet">](http://quantlet.de/)
 
-## [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/qloqo.png" alt="Visit QuantNet">](http://quantlet.de/) **PCA Interpretation** [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/QN2.png" width="60" alt="Visit QuantNet 2.0">](http://quantlet.de/)
+## [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/qloqo.png" alt="Visit QuantNet">](http://quantlet.de/) **PCAInterpretation** [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/QN2.png" width="60" alt="Visit QuantNet 2.0">](http://quantlet.de/)
 
 ```yaml
 
-Name of Quantlet:  PCA Interpretation
+Name of Quantlet:  PCAInterpretation
  
 Published in:      Statistical Programming Languages
   
@@ -12,7 +12,7 @@ Description:       'Shows factor loadings of first two principal components (PCA
  
 Keywords:          pca, pca graph, correlation circle, rotation, factor loadings
 
-See also:          Quantlet4-PCA function, Quantlet5 (PCA + Rotation)
+See also:          Quantlet4 PCAFunction, Quantlet5 PCAandRotation
 
 Author:            Arna Wömmel
   

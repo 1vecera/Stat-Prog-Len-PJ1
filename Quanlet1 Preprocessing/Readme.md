@@ -1,3 +1,28 @@
+[<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/banner.png" width="888" alt="Visit QuantNet">](http://quantlet.de/)
+
+## [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/qloqo.png" alt="Visit QuantNet">](http://quantlet.de/) **Preprocessing** [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/QN2.png" width="60" alt="Visit QuantNet 2.0">](http://quantlet.de/)
+
+```yaml
+
+Name of Quantlet: Preprocessing
+
+Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Data set
+
+Description: 'In this quantlet we read the data from a database file into tibble data frames, convert variable types, subset the interesting columns and rows and join data frames for further analysis. '
+
+Keywords: tibble, group_by, inner_join
+
+Author: Jessie Hsieh
+
+See also: other quantlets in this project
+
+Submitted: 14.03.2018
+
+```
+
+
+### R Code:
+```r
 library ( RSQLite )
 library ( dplyr )
 library ( stringr )
@@ -51,3 +76,5 @@ avg_num_na = function ( column ) { return (sum(is.na( column ) ) /22) }
 Match [ ,c (3 ,10:31) ] %>% split (. $season ) %>% map( avg_num_na )
 
 Match_without0809 = subset (Match , as.character ( season ) !=" 2008/2009") 
+
+```
