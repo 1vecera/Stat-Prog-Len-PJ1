@@ -37,7 +37,7 @@ crossy = geom_vline(xintercept = 0)
 ggplot(data = DF_Factor_loadings_tidy , aes(x = 0 , y = 0, xend= C1, yend = C2, label =Att_Name  )) + 
       geom_segment(arrow = arrow(length = unit(0.5, "cm")),alpha = 0.7) +
       crossx + crossy + 
-      geom_text_repel(aes(x = C1*1.00  , y = C2*1.00),
+      geom_text(aes(x = C1*1.00  , y = C2*1.00),
                           nudge_x = 0.03, # nudge_y = 0.03,
                           #position = "jitter",
                           alpha = 1, col= "red") +
