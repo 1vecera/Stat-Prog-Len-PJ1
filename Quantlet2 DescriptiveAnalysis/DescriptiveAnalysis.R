@@ -63,7 +63,7 @@ ggsave("Boxplot_Attributes_Mental.png", Mental_Boxplot, width = 30, height = 20,
 Player_Attributes_Physical_Boxplot = ggplot(stack(Player_Attributes_Physical), 
                                             aes(x = ind, y = values)) +
                                             geom_boxplot(fill='grey', color="darkblue") #Define colours
-Physical_Boxplot=Player_Attributes_Physical_Boxplot + 
+Physical_Boxplot = Player_Attributes_Physical_Boxplot + 
                  coord_flip() + #Horizontal Boxplot
                  labs(title = "Player Attributes: Physical", x = "Player Attributes", y = "Attribute Values") +  #Label title and axes
                  theme_bw() + #Transparent Background
