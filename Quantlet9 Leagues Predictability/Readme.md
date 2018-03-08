@@ -5,11 +5,11 @@
 
 ```yaml
 
-Name of Quantlet: SPL_Analaysis_of_a_Fifa_DataSet_Leagues_Predictability
+Name of Quantlet: SPL_Analysis_of_a_Fifa_DataSet_Leagues_Predictability
 
-Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Data set
+Published in: Statistical Programming Languages - Student Project on Analysis of a FIFA Data set
 
-Description: 'In these quantlets we are calculating the predictability of chosen leagues. We are using entropy as a proxy of the level of competitiveness of a certain league or a match. The entropy is calculated on the basis of probabilities which different outcomes of the matches, which are, in its turn, retrieved from the bidding odds provided by a gambling agency.Mean entropy by leagues and teams were also calculated and plotted.'
+Description: 'In this quantlet we are calculating the predictability of chosen leagues. We are using entropy as a proxy of the level of competitiveness of a certain league or a match. The entropy is calculated on the basis of probabilities which different outcomes of the matches have, which are, in its turn, retrieved from the bidding odds provided by a gambling agency. Datasets with mean entropy by leagues and teams were also calculated and exported to a .rds file'
 
 Keywords: Entropy, competitivness, predictability
 
@@ -27,7 +27,7 @@ Submitted: 14.03.2018
 ```{r}
 library("RSQLite")
 library("entropy")
-library("ggplot2")
+library("rio")
 
 con = dbConnect(drv = RSQLite::SQLite(), dbname = "database.sqlite")
 all.leagues = dbGetQuery(conn = con, statement = "SELECT * FROM 'League' ")
@@ -77,7 +77,7 @@ matches["entropy"] = apply(matches, 1, MatchEntropy)
 head(matches)
 ```
 
-#### Computing mean entropy across all leagues and individual teams
+#### Computing mean entropy across all leagues and individual teams and exporting data
 
 ```{r}
 home.matches = subset(matches, select = c("league_id", "home_team_api_id", 
@@ -107,31 +107,6 @@ team.entropy = merge(team.entropy, leagues, by = "league_id")
 league.entropy = merge(league.entropy, leagues, by = "league_id")
 head(team.entropy)
 head(league.entropy)
-```
-
-#### And plots
-
-```{r}
-colors = c("blue", "green", "red", "violet", "orange")
-
-ggplot(dat = league.entropy, aes(x = season, y = ent)) + geom_line(aes(colour = league_name, 
-    group = league_name)) + geom_point(aes(colour = league_name, group = league_name)) + 
-    scale_colour_manual(values = colors) + xlab("Season") + ylab("Average Entropy by League") + annotate("text", x = 4, y = 1.035, 
-    label = "less predictable") + annotate("text", x = 4, y = 0.93, label = "more predictable") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-panel.background = element_blank(), axis.line = element_line(colour = "black"))
-
-ggsave("leagues.pdf", width = 10, height = 5, dpi = 100)
-
-ggplot(dat = team.entropy, aes(x = season, y = ent)) + geom_point(aes(colour = league_name, 
-    group = league_name), position = position_dodge(width = 0.5)) + scale_colour_manual(values = colors) + 
-    xlab("Season") + ylab("Average Entropy by Team") + 
-    annotate("text", x = 4, y = 1.1, label = "less predictable") + annotate("text", 
-    x = 4, y = 0.6, label = "more predictable") + annotate("text", x = 7.8, 
-    y = 0.64, label = "Barcelona", size = 2.2) + annotate("text", x = 7.65, 
-    y = 0.65, label = "B.Munich", size = 2.2) + annotate("text", x = 7.75, 
-    y = 0.73, label = "Real Madrid", size = 2.2) + annotate("text", x = 7.67, 
-    y = 0.79, label = "PSG", size = 2.2) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-panel.background = element_blank(), axis.line = element_line(colour = "black"))
-
-ggsave("teams.pdf", width = 10, height = 5, dpi = 100)
+export(team.entropy, "team_entropy.rds")
+export(league.entropy, "league_entropy.rds")
 ```

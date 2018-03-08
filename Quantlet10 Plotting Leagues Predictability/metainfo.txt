@@ -1,0 +1,13 @@
+Name of Quantlet: SPL_Analaysis_of_a_Fifa_DataSet_Plotting_Leagues_Predictability
+
+Published in: Statistical Programming Languages - Student Project on Analysis of a FIFA Data set
+
+Description: 'In this quantlet we are plotting leagues predictability  which has been calculated in Quantlet9. Plots are saved to pdf files.'
+
+Keywords: Entropy, competitivness, plot, predictability
+
+Author: Kseniia Ovadenko
+
+See also: other quantlets in this project
+
+Submitted: 14.03.2018
