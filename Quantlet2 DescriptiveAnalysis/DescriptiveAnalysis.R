@@ -35,25 +35,25 @@ par(mar = c(5.1,4.1,4.1,3.1))
 #Technical Skills
 Player_Attributes_Technical_Boxplot = ggplot(stack(Player_Attributes_Technical), 
                                              aes(x = ind, y = values)) +
-                                            geom_boxplot(fill='grey', color="darkred") #Define colours
-Technical_Boxplot=Player_Attributes_Technical_Boxplot + 
-  coord_flip() + #Horizontal Boxplot
-  labs(title = "Player Attributes: Technical", x = "Player Attributes", y = "Attribute Values") +  #Label title and axes
-  theme_bw() + #Transparent Background
-  theme(legend.position="none") #Remove legend
+                                             geom_boxplot(fill='grey', color="darkred") #Define colours
+Technical_Boxplot = Player_Attributes_Technical_Boxplot + 
+                    coord_flip() + #Horizontal Boxplot
+                    labs(title = "Player Attributes: Technical", x = "Player Attributes", y = "Attribute Values") +  #Label title and axes
+                    theme_bw() + #Transparent Background
+                     theme(legend.position="none") #Remove legend
 
 ggsave("Boxplot_Attributes_Technical.png", Technical_Boxplot, width = 30, height = 20, units = "cm")
 
 
 #Mental Skills
 Player_Attributes_Mental_Boxplot = ggplot(stack(Player_Attributes_Mental), 
-                                             aes(x = ind, y = values)) +
-  geom_boxplot(fill='grey', color="darkgreen") #Define colours
-Mental_Boxplot=Player_Attributes_Mental_Boxplot + 
-  coord_flip() + #Horizontal Boxplot
-  labs(title = "Player Attributes: Mental", x = "Player Attributes", y = "Attribute Values") +  #Label title and axes
-  theme_bw() + #Transparent Background
-  theme(legend.position="none") #Remove legend
+                                          aes(x = ind, y = values)) +
+                                          geom_boxplot(fill='grey', color="darkgreen") #Define colours
+Mental_Boxplot = Player_Attributes_Mental_Boxplot + 
+                 coord_flip() + #Horizontal Boxplot
+                 labs(title = "Player Attributes: Mental", x = "Player Attributes", y = "Attribute Values") +  #Label title and axes
+                 theme_bw() + #Transparent Background
+                 theme(legend.position="none") #Remove legend
 
 Mental_Boxplot
 ggsave("Boxplot_Attributes_Mental.png", Mental_Boxplot, width = 30, height = 20, units = "cm")
@@ -61,13 +61,13 @@ ggsave("Boxplot_Attributes_Mental.png", Mental_Boxplot, width = 30, height = 20,
 
 #Physical Skills
 Player_Attributes_Physical_Boxplot = ggplot(stack(Player_Attributes_Physical), 
-                                          aes(x = ind, y = values)) +
-  geom_boxplot(fill='grey', color="darkblue") #Define colours
+                                            aes(x = ind, y = values)) +
+                                            geom_boxplot(fill='grey', color="darkblue") #Define colours
 Physical_Boxplot=Player_Attributes_Physical_Boxplot + 
-  coord_flip() + #Horizontal Boxplot
-  labs(title = "Player Attributes: Physical", x = "Player Attributes", y = "Attribute Values") +  #Label title and axes
-  theme_bw() + #Transparent Background
-  theme(legend.position="none") #Remove legend
+                 coord_flip() + #Horizontal Boxplot
+                 labs(title = "Player Attributes: Physical", x = "Player Attributes", y = "Attribute Values") +  #Label title and axes
+                 theme_bw() + #Transparent Background
+                 theme(legend.position="none") #Remove legend
 
 Physical_Boxplot
 ggsave("Boxplot_Attributes_Physical.png", Physical_Boxplot, width = 30, height = 20, units = "cm")
