@@ -1,15 +1,17 @@
 
 [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/banner.png" width="888" alt="Visit QuantNet">](http://quantlet.de/)
 
-## [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/qloqo.png" alt="Visit QuantNet">](http://quantlet.de/) **SPL_Analaysis_of_a_Fifa_DataSet_Leagues_Predictability** [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/QN2.png" width="60" alt="Visit QuantNet 2.0">](http://quantlet.de/)
+## [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/qloqo.png" alt="Visit QuantNet">](http://quantlet.de/) **LeaguesPredictability** [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/QN2.png" width="60" alt="Visit QuantNet 2.0">](http://quantlet.de/)
 
 ```yaml
 
-Name of Quantlet: SPL_Analysis_of_a_Fifa_DataSet_Leagues_Predictability
+Name of Quantlet: LeaguesPredictability
 
-Published in: Statistical Programming Languages - Student Project on Analysis of a FIFA Data set
+Published in: Statistical Programming Languages - Student Project on Analysis of a FIFA Dataset
 
-Description: 'In this quantlet we are calculating the predictability of chosen leagues. We are using entropy as a proxy of the level of competitiveness of a certain league or a match. The entropy is calculated on the basis of probabilities which different outcomes of the matches have, which are, in its turn, retrieved from the bidding odds provided by a gambling agency. Datasets with mean entropy by leagues and teams were also calculated and exported to a .rds file'
+Description: 'In this quantlet we are calculating the predictability of chosen leagues. We are using 
+entropy as a proxy of the level of competitiveness of a certain league or a match. The entropy is 
+calculated on the basis of probabilities which different outcomes of the matches have, which are, in its turn, retrieved from the bidding odds provided by a gambling agency. Datasets with mean entropy by leagues and teams were also calculated and exported to a .rds file'
 
 Keywords: Entropy, competitivness, predictability
 
