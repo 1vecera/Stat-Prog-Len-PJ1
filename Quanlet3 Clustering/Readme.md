@@ -3,7 +3,19 @@
 ## [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/qloqo.png" alt="Visit QuantNet">](http://quantlet.de/) **Clustering** [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/QN2.png" width="60" alt="Visit QuantNet 2.0">](http://quantlet.de/)
 
 ```yaml
+Name of Quantlet: Clustering
 
+Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Dataset
+
+Description: 'In this quantlet, we used k-mean and agglomerative clustering methods with player attributes to assign groups to the players. Graph, dendrogram and heat maps were plotted to illustrate the determination of number of clusters, orders of joining clusters and attributes’ mean within clusters respectively. Referring to the names of the player, we can verify the relationship between clusters and their positions.’
+
+Keywords: kmeans, hclust, dendrogram, heat map
+
+Author: Jessie Hsieh
+
+See also: other quantlets in this project
+
+Submitted: 14.03.2018
 ```
 
 
