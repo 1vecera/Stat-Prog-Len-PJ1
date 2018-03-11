@@ -1,3 +1,8 @@
+if(!file.exists("database.sqlite")){
+  print("Please download the database file from kaggle.com and put inside Quanlet 1.")
+  print("https://www.kaggle.com/hugomathien/soccer/data")
+}
+
 # load required packages
 if (!require("RSQLite")) {
   install.packages("RSQLite", dependencies = TRUE)
