@@ -112,18 +112,15 @@ DF_Player_Scores_VR12 = left_join( x= DF_Player_Scores_VR12,
                                    )
 DF_Player_Scores_VR12 = unique( DF_Player_Scores_VR12)
 
-saveRDS(DF_Player_Scores_VR12, file= "DF_Player_Scores_VR12.rds")
-saveRDS(DF_Player_Scores, file = "DF_Player_Scores.rds")
-saveRDS(DF_Loadings, file = "DF_Loadings.rds")
+saveRDS( DF_Player_Scores_VR12, file= "Quantlet5 PCAandRotation/DF_Player_Scores_VR12.rds")
+saveRDS( DF_Player_Scores,      file = "Quantlet5 PCAandRotation/DF_Player_Scores.rds")
+saveRDS( DF_Loadings,           file = "Quantlet5 PCAandRotation/DF_Loadings.rds")
 
  
 # Data Export Jessie ------------------------------------------------------
-View(Player_Attributes_quant_mean)
- 
- 
+
 DF_Player_Scores_VR14 = data.frame( Player_Attributes_quant_mean[1],
                                     (DF_Player_Scores[,c(7:10)])
                                     )
 
 saveRDS(DF_Player_Scores_VR14, file = "Data_Players_Match_Predictions.rds")
-
