@@ -25,7 +25,6 @@ Submitted:         14.03.2018
 ```r
 #Descriptive Analysis - Distribution of Variables ------------------------------------------------------------------
 
-#Descriptive Analysis ---------------------------------------------------------------l
 #Visualization of distribution
 
 library(ggplot2)
