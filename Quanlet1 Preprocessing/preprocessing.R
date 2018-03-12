@@ -1,7 +1,15 @@
-if(!file.exists("database.sqlite")){
-    print("Please download the database file from kaggle.com, unzip and put in working directory.")
-    print("https://www.kaggle.com/hugomathien/soccer/data")
-}
+# download automatically the database stored on kaagle and save it in our working directory
+
+working_directory=getwd()
+database_name=paste(working_directory,"/database.sqlite",sep="")
+download.file(url = "https://www.kaggle.com/hugomathien/soccer/data",
+              destfile = database_name, mode = "wb")
+
+
+#if(!file.exists("database.sqlite")){
+ #   print("Please download the database file from kaggle.com, unzip and put in working directory.")
+   # print("https://www.kaggle.com/hugomathien/soccer/data")
+#}
 
 # load required packages
 if (!require("RSQLite")) {
