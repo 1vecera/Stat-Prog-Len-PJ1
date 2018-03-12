@@ -22,7 +22,7 @@ if (!require("purrr")) {
 }
 
 # read the database file and look at all tables contained inside
-con = dbConnect(SQLite(), dbname = "database.sqlite")
+con = dbConnect(SQLite(), dbname = "Quanlet1 Preprocessing/database.sqlite")
 dbListTables(con)
 
 # convert the tables needed into tibbles using simple queries
@@ -84,3 +84,8 @@ Match[, c(3, 10:31)] %>% split(.$season) %>% map(avg_num_na)
 
 # get rid of season 2008 to 2009 due to too many NAs
 Match_without0809 = subset(Match, as.character(season) != " 2008/2009")
+
+# save useful data frames
+saveRDS(Player[,3:4], "Quanlet1 Preprocessing/Player_names.rds")
+saveRDS(Match_without0809, "Quanlet1 Preprocessing/Match_without0809.rds")
+saveRDS(Player_all, "Quanlet1 Preprocessing/Player_all.rds")
