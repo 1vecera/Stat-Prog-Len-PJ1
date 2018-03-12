@@ -42,7 +42,7 @@ Technical_Boxplot = Player_Attributes_Technical_Boxplot +
                     theme_bw() + #Transparent Background
                      theme(legend.position="none") #Remove legend
 
-ggsave("Boxplot_Attributes_Technical.png", Technical_Boxplot, width = 30, height = 20, units = "cm")
+ggsave("Boxplot_Attributes_Technical.pdf", Technical_Boxplot, width = 30, height = 20, units = "cm")
 
 
 #Mental Skills
@@ -56,7 +56,7 @@ Mental_Boxplot = Player_Attributes_Mental_Boxplot +
                  theme(legend.position="none") #Remove legend
 
 Mental_Boxplot
-ggsave("Boxplot_Attributes_Mental.png", Mental_Boxplot, width = 30, height = 20, units = "cm")
+ggsave("Boxplot_Attributes_Mental.pdf", Mental_Boxplot, width = 30, height = 20, units = "cm")
 
 
 #Physical Skills
@@ -70,4 +70,4 @@ Physical_Boxplot = Player_Attributes_Physical_Boxplot +
                  theme(legend.position="none") #Remove legend
 
 Physical_Boxplot
-ggsave("Boxplot_Attributes_Physical.png", Physical_Boxplot, width = 30, height = 20, units = "cm")
+ggsave("Boxplot_Attributes_Physical.pdf", Physical_Boxplot, width = 30, height = 20, units = "cm")
