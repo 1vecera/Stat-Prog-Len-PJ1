@@ -60,41 +60,42 @@ par(mar = c(5.1,4.1,4.1,3.1))
 
 #Create Boxplot for each attribute category
 #Technical Skills
-Player_Attributes_Technical_Boxplot = ggplot(stack(Player_Attributes_Technical), 
+Player_Attributes_Technical_Boxplot = ggplot(stack(Player_Attributes_Technical), #Stack function for data frame 
                                              aes(x = ind, y = values)) +
-                                             geom_boxplot(fill='grey', color="darkred") #Define colours
+                                             geom_boxplot(fill = "grey", color="darkred") #Define colours
 Technical_Boxplot = Player_Attributes_Technical_Boxplot + 
                     coord_flip() + #Horizontal Boxplot
                     labs(title = "Player Attributes: Technical", x = "Player Attributes", y = "Attribute Values") +  #Label title and axes
                     theme_bw() + #Transparent Background
-                     theme(legend.position="none") #Remove legend
+                     theme(legend.position = "none", axis.text=element_text(size = 10.5)) #Remove legend #Change font size
 
-ggsave("Boxplot_Attributes_Technical.png", Technical_Boxplot, width = 30, height = 20, units = "cm")
+ggsave("Boxplot_Attributes_Technical.pdf", Technical_Boxplot, width = 30, height = 25, units = "cm") #Save as PDF with appropriate size
+
 
 
 #Mental Skills
-Player_Attributes_Mental_Boxplot = ggplot(stack(Player_Attributes_Mental), 
+Player_Attributes_Mental_Boxplot = ggplot(stack(Player_Attributes_Mental), #Stack function for data frame
                                           aes(x = ind, y = values)) +
-                                          geom_boxplot(fill='grey', color="darkgreen") #Define colours
+                                          geom_boxplot(fill = "grey", color = "darkgreen") #Define colours
 Mental_Boxplot = Player_Attributes_Mental_Boxplot + 
                  coord_flip() + #Horizontal Boxplot
                  labs(title = "Player Attributes: Mental", x = "Player Attributes", y = "Attribute Values") +  #Label title and axes
                  theme_bw() + #Transparent Background
-                 theme(legend.position="none") #Remove legend
+                 theme(legend.position = "none", axis.text = element_text(size = 10.5)) #Remove legend #Change font size
 
 Mental_Boxplot
-ggsave("Boxplot_Attributes_Mental.png", Mental_Boxplot, width = 30, height = 20, units = "cm")
+ggsave("Boxplot_Attributes_Mental.pdf", Mental_Boxplot, width = 30, height = 8, units = "cm") #Save as PDF with appropriate size
 
 
 #Physical Skills
-Player_Attributes_Physical_Boxplot = ggplot(stack(Player_Attributes_Physical), 
+Player_Attributes_Physical_Boxplot = ggplot(stack(Player_Attributes_Physical), #Stack function for data frame
                                             aes(x = ind, y = values)) +
-                                            geom_boxplot(fill='grey', color="darkblue") #Define colours
+                                            geom_boxplot(fill = "grey", color = "darkblue") #Define colours
 Physical_Boxplot = Player_Attributes_Physical_Boxplot + 
                  coord_flip() + #Horizontal Boxplot
                  labs(title = "Player Attributes: Physical", x = "Player Attributes", y = "Attribute Values") +  #Label title and axes
                  theme_bw() + #Transparent Background
-                 theme(legend.position="none") #Remove legend
+                 theme(legend.position="none", axis.text=element_text(size = 10.5)) #Remove legend #Change font size
 
 Physical_Boxplot
-ggsave("Boxplot_Attributes_Physical.png", Physical_Boxplot, width = 30, height = 20, units = "cm")
+ggsave("Boxplot_Attributes_Physical.pdf", Physical_Boxplot, width = 30, height = 13, units = "cm") #Save as PDF with appropriate size
