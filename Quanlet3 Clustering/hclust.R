@@ -76,7 +76,6 @@ heatmap.2( means_matrix,
            trace        = "none",
            margins      = c(8,4)
            )
-dev.off()               # close the PNG device
 
 ### find out who were grouped differently in the two clustering methods
 

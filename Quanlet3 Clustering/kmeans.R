@@ -1,24 +1,24 @@
 # load the required package, install if necessary
 
 if (!require("cluster")) {
-  install.packages("cluster", dependencies = TRUE)
-  library(cluster)
+    install.packages("cluster", dependencies = TRUE)
+    library(cluster)
 }
 if (!require("fpc")) {
-  install.packages("fpc", dependencies = TRUE)
-  library(fpc)
+    install.packages("fpc", dependencies = TRUE)
+    library(fpc)
 }
 if (!require("dplyr")) {
-  install.packages("dplyr", dependencies = TRUE)
-  library(dplyr)
+    install.packages("dplyr", dependencies = TRUE)
+    library(dplyr)
 }
 if (!require("RColorBrewer")) {
-  install.packages("RColorBrewer", dependencies = TRUE)
-  library(RColorBrewer)
+    install.packages("RColorBrewer", dependencies = TRUE)
+    library(RColorBrewer)
 }
 if (!require("gplots")) {
-  install.packages("gplots", dependencies = TRUE)
-  library(gplots)
+    install.packages("gplots", dependencies = TRUE)
+    library(gplots)
 }
 # read in the mean player attributes prepared in advance
 # this dataset was used in principal component analysis
@@ -33,19 +33,20 @@ bss = (nrow(Player_new) -1) * sum(apply(Player_new ,2 ,var))
 # for each number of clusters, find out WSS and BSS from kmeans()
 
 for (i in 2:15) { 
-  result = kmeans(Player_new, iter.max = 15, centers=i)
-  wss[i] = result$tot.withinss
-  bss[i] = sum(result$betweenss)
+    result = kmeans(Player_new, iter.max = 15, centers=i)
+    wss[i] = result$tot.withinss
+    bss[i] = sum(result$betweenss)
 }
 
 # plot wss:tss against K with both line and points
 
-dev.off()
-plot(1:15, wss/(bss+wss), 
-     type = "b", 
-     main = "Choosing K in kmean clustering",
-     xlab = "Number of Clusters",
-     ylab = "Within groups sum of squares to TSS")
+par( mar = c(3,3,3,2) + 0.1, bg = NA)
+plot( 1:15, wss/(bss+wss), 
+      type = "b", 
+      main = "Choosing K in kmean clustering",
+      xlab = "Number of Clusters",
+      ylab = "Within groups sum of squares to TSS" 
+      )
 
 abline(a = 0.2, b = 0, col = "red")
 
@@ -57,13 +58,13 @@ fit = kmeans(Player_new[2:29], 3)
 Player_kmean = data.frame(Player_new, fit$cluster)
 
 # get the cluster means for interpretation
-means = aggregate(Player_kmean[2:30],by=list(fit$cluster),FUN=mean)[,-1]
+means = aggregate( Player_kmean[2:30],by = list(fit$cluster), FUN = mean)[,-1]
 
 # visualizing the means of the clusters with a heatmap
 dev.off()
 means_matrix = data.matrix(means[,1:28])                # acceptable format for heatmap.2()
 my_palette   = brewer.pal(9,"Blues")                    # desirable color palette
-par(cex.main=1)                                         # readable title
+par(cex.main = 1, bg = NA)                                      # readable title, transparent bg
 heatmap.2( means_matrix,
            Rowv         = NA, 
            Colv         = NA,                                   # no dendrograms on the axis
@@ -77,10 +78,10 @@ heatmap.2( means_matrix,
            density.info = "none",                     
            trace        = "none",
            margins      = c(8,4)
-)
+           )
 
 # how many players are in each group?
-table(Player_kmean$fit.cluster)
+table( Player_kmean$fit.cluster )
 
 # read in player information for the names matching
 Player_names = readRDS("Player_names.rds")
@@ -89,9 +90,9 @@ Player_names = readRDS("Player_names.rds")
 Player_kmean = inner_join(Player_kmean, Player_names)
 
 # check player names in each cluster to find out their positions
-Player_kmean$player_name[Player_kmean$fit.cluster == 1]
-Player_kmean$player_name[Player_kmean$fit.cluster == 2]
-Player_kmean$player_name[Player_kmean$fit.cluster == 3]
+# Player_kmean$player_name[Player_kmean$fit.cluster == 1]
+# Player_kmean$player_name[Player_kmean$fit.cluster == 2]
+# Player_kmean$player_name[Player_kmean$fit.cluster == 3]
 
 # save the resulting data frame as .rds file
 saveRDS(Player_kmean, "Player_kmean.rds")
