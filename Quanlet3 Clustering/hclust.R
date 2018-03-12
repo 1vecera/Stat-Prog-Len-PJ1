@@ -16,7 +16,7 @@ if (!require("dendextend")) {
 # read in the mean player attributes prepared in advance
 # this dataset was used in principal component analysis
 
-Player_new = readRDS("Player_Attributes_quant_mean.rds")
+Player_new = readRDS("Quanlet3 Clustering/Player_Attributes_quant_mean.rds")
 
 # get the Euclidean distance between players
 Player.dist = dist(Player_new[,-1], method = "euclidean")
@@ -55,7 +55,7 @@ Player_hclust               = data.frame(Player_new,groupings[,"3"])
 colnames(Player_hclust)[30] = "grouping"
 
 # get the cluster means for interpretation
-hclust_means = aggregate(Player_hclust[2:30],by=list(grouping),FUN=mean)[,-1]
+hclust_means = aggregate(Player_hclust[2:30],by=list(Player_hclust$grouping),FUN=mean)[,-1]
 
 # visualizing the means of the clusters with a heatmap
 dev.off()
@@ -63,7 +63,8 @@ means_matrix  = data.matrix(hclust_means[,1:28])
 my_palette    = brewer.pal(9,"Oranges")
 par( cex.main = 1, bg = NA)                                   # readable title, transparent bg
 heatmap.2( means_matrix,
-           Rowv         = NA,                                 # no dendrograms on the axis
+           dendrogram   = "none",                             # no dendrograms on the axis
+           Rowv         = NA,                                 
            Colv         = NA,
            main         = "Aggregated means from hclust",     # heat map title
            col          = my_palette,
@@ -80,15 +81,10 @@ heatmap.2( means_matrix,
 ### find out who were grouped differently in the two clustering methods
 
 # read in the dataframe from kmean results
-Player_kmean = readRDS("Player_kmean.rds")
+Player_kmean = readRDS("Quanlet3 Clustering/Player_kmean.rds")
 
 # put the result of agglomerative clustering into the data frame
-# simple logical operation was used to find out who was grouped differently
-# because the names of the groups were assigned randomly
+# compare the different groupings from the clustering approaches
+# the 714 players are mostly midfielders
+
 Player_kmean$fit.hclust = Player_hclust$grouping
-diff_players            = subset( Player_kmean, fit.cluster!=fit.hclust)
-
-#(fit.cluster-fit.hclust!=1) & (fit.cluster-fit.hclust!=-2)
-
-# look at the names, most of them are midfielders
-diff_players$player_name

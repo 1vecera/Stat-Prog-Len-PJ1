@@ -23,7 +23,7 @@ if (!require("gplots")) {
 # read in the mean player attributes prepared in advance
 # this dataset was used in principal component analysis
 
-Player_new = readRDS("Player_Attributes_quant_mean.rds")
+Player_new = readRDS("Quanlet3 Clustering/Player_Attributes_quant_mean.rds")
 
 # prepare the within SS for one cluster, and set that equal for between SS 
 
@@ -84,7 +84,7 @@ heatmap.2( means_matrix,
 table( Player_kmean$fit.cluster )
 
 # read in player information for the names matching
-Player_names = readRDS("Player_names.rds")
+Player_names = readRDS("Quanlet3 Clustering/Player_names.rds")
 
 # join the names to the k-mean clustering results
 Player_kmean = inner_join(Player_kmean, Player_names)
@@ -95,4 +95,4 @@ Player_kmean = inner_join(Player_kmean, Player_names)
 # Player_kmean$player_name[Player_kmean$fit.cluster == 3]
 
 # save the resulting data frame as .rds file
-saveRDS(Player_kmean, "Player_kmean.rds")
+saveRDS(Player_kmean, "Quanlet3 Clustering/Player_kmean.rds")
