@@ -27,8 +27,8 @@ Player_new = readRDS("Player_Attributes_quant_mean.rds")
 
 # prepare the within SS for one cluster, and set that equal for between SS 
 
-wss = (nrow(Player_new)-1)*sum(apply(Player_new,2,var))
-bss = (nrow(Player_new)-1)*sum(apply(Player_new,2,var))
+wss = (nrow(Player_new) -1) * sum(apply(Player_new ,2 ,var))
+bss = (nrow(Player_new) -1) * sum(apply(Player_new ,2 ,var))
 
 # for each number of clusters, find out WSS and BSS from kmeans()
 
@@ -40,9 +40,13 @@ for (i in 2:15) {
 
 # plot wss:tss against K with both line and points
 
-plot(1:15, wss/(bss+wss), type="b", main = "Choosing K in kmean clustering",
-     xlab="Number of Clusters",
-     ylab="Within groups sum of squares to TSS")
+dev.off()
+plot(1:15, wss/(bss+wss), 
+     type = "b", 
+     main = "Choosing K in kmean clustering",
+     xlab = "Number of Clusters",
+     ylab = "Within groups sum of squares to TSS")
+
 abline(a = 0.2, b = 0, col = "red")
 
 
@@ -56,21 +60,23 @@ Player_kmean = data.frame(Player_new, fit$cluster)
 means = aggregate(Player_kmean[2:30],by=list(fit$cluster),FUN=mean)[,-1]
 
 # visualizing the means of the clusters with a heatmap
-means_matrix = data.matrix(means[,1:28])               # acceptable format for heatmap.2()
-my_palette = brewer.pal(9,"Blues")                     # desirable color palette
-par(cex.main=1)                                        # readable title
-heatmap.2(means_matrix,
-          Rowv=NA, Colv=NA,                            # no dendrograms on the axis
-          main = "Aggregated means from kmeans",       # heat map title
-          col=my_palette,
-          scale="none",                                # use scale as given
-          key=TRUE,                                    # show color key
-          symkey=FALSE, 
-          labRow = c("Group 1", "Group 2", "Group 3"),
-          cexRow=1,                                    # size of row labels
-          density.info="none",                     
-          trace="none",
-          margins=c(8,4)
+dev.off()
+means_matrix = data.matrix(means[,1:28])                # acceptable format for heatmap.2()
+my_palette   = brewer.pal(9,"Blues")                    # desirable color palette
+par(cex.main=1)                                         # readable title
+heatmap.2( means_matrix,
+           Rowv         = NA, 
+           Colv         = NA,                                   # no dendrograms on the axis
+           main         = "Aggregated means from kmeans",       # heat map title
+           col          = my_palette,
+           scale        = "none",                               # use scale as given
+           key          = TRUE,                                 # show color key
+           symkey       = FALSE, 
+           labRow       = c("Group 1", "Group 2", "Group 3"),
+           cexRow       = 1,                                    # size of row labels
+           density.info = "none",                     
+           trace        = "none",
+           margins      = c(8,4)
 )
 
 # how many players are in each group?
