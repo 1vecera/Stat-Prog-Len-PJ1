@@ -6,6 +6,7 @@ library(tidyr)
 library(ggrepel)
 
 
+
 #Tidy data  
 DF_Loadings = readRDS("DF_Loadings.rds")
 DF_Factor_loadings_tidy_raw = as.data.frame(cbind(c("Crossing", "Finishing", "Heading Accuracy", "Short Passing", 
@@ -59,3 +60,4 @@ ggplot(data = DF_Player_Scores_VR12, aes(x=RC_VR_NrCol4_1, y = RC_VR_NrCol4_2))+
        scale_y_continuous("Second Rotated  Component" ) +
        geom_label_repel(data = subset(DF_Player_Scores_VR12, RC_VR_NrCol4_1 > 7.5 | RC_VR_NrCol4_2 > 4.8),
        aes(label = player_name), col = "red", segment.color ="red", size = 2.5)   + theme_bw()                
+

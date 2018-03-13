@@ -2,7 +2,7 @@ Name of Quantlet: Preprocessing
 
 Published in: Statistical Programming Languages - Student Project on Analaysis of a FIFA Dataset
 
-Description: 'In this quantlet we read the data from a database file into tibble data frames, convert variable types, subset the interesting columns and rows and join data frames for further analysis.'
+Description: 'In this quantlet we read the data from a database file into tibble data frames, convert variable types, subset the interesting columns and rows and join data frames for further analysis. The database file should be downloaded from kaggle.com and unzipped to the folder containing all quanlets before running the code. '
 
 Keywords: tibble, group_by, inner_join
 
