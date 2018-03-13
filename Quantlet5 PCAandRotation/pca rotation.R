@@ -84,8 +84,9 @@ View(DF_Player_Scores)
 View(Player_Attributes_quant_mean)
 
 #Create data subset for the graphs with player names 
+Names_table = as.data.frame(Names_table)
 DF_Player_Scores_VR12 = data.frame(Player_Attributes_quant_mean[1],(DF_Player_Scores[,c(7,8)]))
-DF_Player_Scores_VR12 = left_join( x= DF_Player_Scores_VR12, y= Player_all[,3:4], by = "player_api_id")
+DF_Player_Scores_VR12 = left_join( x= DF_Player_Scores_VR12, y= Player_all[,2:3], by = "player_api_id")
 DF_Player_Scores_VR12 =  unique ( DF_Player_Scores_VR12)
 
  saveRDS(DF_Player_Scores_VR12, file= "DF_Player_Scores_VR12.rds")
