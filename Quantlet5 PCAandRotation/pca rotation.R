@@ -4,6 +4,12 @@ if (!require("dplyr")) {
   library(cluster)
 }
 
+if (!require("ggplot2")) {
+  install.packages("ggplot2", dependencies = TRUE)
+  library(cluster)
+}
+
+
 # We load the table Player_all
 
 if(file.exists("Player_all.rds")){           # Check if the Finished files are in the directory
@@ -26,13 +32,19 @@ source("Quantlet4 PCAFunction/PCAFunction.R")
 pca  = PCA( Player_Attributes_quant_mean[-1],     # All of the attributes without the id
             desiredvariance = 0.8, 
             norm = T, 
-            order = 10
+            order = 10 #maximal number of componets 
             )
 
 pca2 = PCA( Player_Attributes_quant_mean[-1],     # Pca with Just 2 components
-            desiredvariance = 0.75, 
-            order = 2
+            desiredvariance = 0.8, 
+            order = 2,
+            norm =  T
             ) 
+#Plot of number of PCs needed to 
+qplot(1:28, pca$cum, geom = "point", xlab= "Number of PC",
+      ylab="Explained Variance") + theme_bw()
+qplot(1:28, pca2$cum, geom = "point", xlab= "Number of PC",
+      ylab="Explained Variance") + theme_bw()
 
 
 # Rotations ---------------------------------------------------------------
@@ -47,7 +59,6 @@ List_loadings = list(
     varimax_rotation_PCA  = varimax_rotation_PCA$loadings[,],     # Rotated loadings
     varimax_rotation_PCA2 = varimax_rotation_PCA2$loadings[,]     # Rotated loadings
 )
-
 
 # Functions for naming columns and rows to distinguish between rotations and number of componets
 
