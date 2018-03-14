@@ -20,7 +20,7 @@ if(file.exists("Player_all.rds")){           # Check if the Finished files are i
 #We take the mean levels of his scores
 
 quant = Player_all[, c(2,11:38)]   # We only keep a subset of nonquantitative variables
-quant = na.omit(quant)             # We have to delete the rows containing some missing values #not the best way to do
+quant = na.omit(quant)             # We have to delete the rows containing some missing values
 Player_Attributes_quant_mean = aggregate( quant, 
                                           by=list(quant$player_api_id), 
                                           mean
