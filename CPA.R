@@ -33,7 +33,7 @@ L=levels(as.factor(quant$player_fifa_api_id))
 
 Player_Attributes_quant_mean=aggregate(quant,by=list(quant$player_fifa_api_id), mean)[-1]
 
-
+  
 
 
 #5/ First results
