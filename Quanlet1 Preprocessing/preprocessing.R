@@ -2,7 +2,7 @@
 
 working_directory=getwd()
 database_name=paste(working_directory,"/database.sqlite",sep="")
-download.file(url = "https://www.kaggle.com/hugomathien/soccer/data",
+download.file(url = "https://www.kaggle.com/hugomathien/soccer/downloads/database.sqlite/10",
               destfile = database_name, mode = "wb")
 
 
@@ -29,16 +29,59 @@ if (!require("purrr")) {
     library(purrr)
 }
 
-# read the database file and look at all tables contained inside
-con = dbConnect(SQLite(), dbname = "Quanlet1 Preprocessing/database.sqlite")
-dbListTables(con)
+# prepare a list of the leagues that we are interested in, for predictability
 
-# convert the tables needed into tibbles using simple queries
-Match             = tbl_df(dbGetQuery(con, "SELECT * FROM Match"))
-Player            = tbl_df(dbGetQuery(con, "SELECT * FROM Player"))
-Player_Attributes = tbl_df(dbGetQuery(con, "SELECT * FROM
-                                            Player_Attributes"))
+leagues           = data.frame( league_name = character(), 
+                                league_id = integer(), 
+                                stringsAsFactors = FALSE
+)
+leagues[1, ]      = c("England", 1729)
+leagues[2, ]      = c("France", 4769)
+leagues[3, ]      = c("Germany", 7809)
+leagues[4, ]      = c("Italy", 10257)
+leagues[5, ]      = c("Spain", 21518)
 
+
+if(!file.exists("database.sqlite")){
+
+    # read the database file and look at all tables contained inside
+    con = dbConnect(SQLite(), dbname = "Quanlet1 Preprocessing/database.sqlite")
+    dbListTables(con)
+
+    # convert the tables needed into tibbles using simple queries
+    Match             = tbl_df( dbGetQuery( con, "SELECT * FROM Match"))
+    Player            = tbl_df( dbGetQuery( con, "SELECT * FROM Player"))
+    Player_Attributes = tbl_df( dbGetQuery( con, "SELECT * FROM Player_Attributes"))
+    all.leagues       = dbGetQuery( conn = con, statement = "SELECT * FROM 'League' ")
+    
+    league.ids   = paste(leagues[, 2], collapse = ", ")
+    table             = dbGetQuery( conn = con, 
+                                    statement = paste( "SELECT * FROM Match WHERE league_id IN (", 
+                                                       league.ids, 
+                                                       ")",
+                                                       sep = "")
+                                    )
+    
+    print("As database file exists, raw data loaded from database file.")
+    
+} else {
+    Match             = tbl_df(readRDS("Quanlet1 Preprocessing/raw_Match.rds"))
+    Player            = tbl_df(readRDS("Quanlet1 Preprocessing/raw_Player.rds"))
+    Player_Attributes = tbl_df(readRDS("Quanlet1 Preprocessing/raw_Player_Attributes.rds"))
+    
+    table             = readRDS("Quanlet1 Preprocessing/raw_table.rds")
+    
+    print("As database file doesn't exist, raw data loaded from rds file.")
+}
+
+# prepare the league and match data frame for predictability
+saveRDS( leagues, "Quanlet1 Preprocessing/leagues.rds")
+
+matches = table[, c("id", "league_id", "season", "home_team_api_id", "away_team_api_id", 
+                    "B365H", "B365D", "B365A")]
+saveRDS( matches, "Quanlet1 Preprocessing/matches_predictability.rds")
+
+    
 # correct data type and make colnames intuitive
 Player$birthday                 = as.Date(Player$birthday)
 colnames(Player_Attributes)[4]  = "date_recorded"
@@ -97,3 +140,4 @@ Match_without0809 = subset(Match, as.character(season) != " 2008/2009")
 saveRDS(Player[,3:4], "Quanlet1 Preprocessing/Player_names.rds")
 saveRDS(Match_without0809, "Quanlet1 Preprocessing/Match_without0809.rds")
 saveRDS(Player_all, "Quanlet1 Preprocessing/Player_all.rds")
+
