@@ -66,6 +66,7 @@ means_matrix = data.matrix(means[,1:28])                # acceptable format for 
 my_palette   = brewer.pal(9,"Blues")                    # desirable color palette
 par(cex.main = 1, bg = NA)                                      # readable title, transparent bg
 heatmap.2( means_matrix,
+           dendrogram   = "none",                             # no dendrograms on the axis
            Rowv         = NA, 
            Colv         = NA,                                   # no dendrograms on the axis
            main         = "Aggregated means from kmeans",       # heat map title
