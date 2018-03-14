@@ -30,7 +30,7 @@ names(DF_Factor_loadings_tidy)[5:6] =c("C1","C2")
 #Remove useless variable
 rm(DF_Factor_loadings_tidy_raw)
 
-#Create DAH MASTER Ducking PLOT
+#Create two axes
 crossx = geom_hline(yintercept = 0)
 crossy = geom_vline(xintercept = 0)
 
