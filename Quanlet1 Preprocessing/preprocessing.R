@@ -1,9 +1,9 @@
 # download automatically the database stored on kaagle and save it in our working directory
 
-working_directory=getwd()
-database_name=paste(working_directory,"/database.sqlite",sep="")
-download.file(url = "https://www.kaggle.com/hugomathien/soccer/downloads/database.sqlite/10",
-              destfile = database_name, mode = "wb")
+# working_directory=getwd()
+# database_name=paste(working_directory,"/database.sqlite",sep="")
+# download.file(url = "https://www.kaggle.com/hugomathien/soccer/downloads/database.sqlite/10",
+#              destfile = database_name, mode = "wb")
 
 
 #if(!file.exists("database.sqlite")){
@@ -42,7 +42,7 @@ leagues[4, ]      = c("Italy", 10257)
 leagues[5, ]      = c("Spain", 21518)
 
 
-if(!file.exists("database.sqlite")){
+if(file.exists("database.sqlite")){
 
     # read the database file and look at all tables contained inside
     con = dbConnect(SQLite(), dbname = "Quanlet1 Preprocessing/database.sqlite")
@@ -70,11 +70,13 @@ if(!file.exists("database.sqlite")){
     Player_Attributes = tbl_df(readRDS("Quanlet1 Preprocessing/raw_Player_Attributes.rds"))
     
     table             = readRDS("Quanlet1 Preprocessing/raw_table.rds")
+    all.leagues       = readRDS("Quanlet1 Preprocessing/all_leagues.rds")
     
     print("As database file doesn't exist, raw data loaded from rds file.")
 }
 
 # prepare the league and match data frame for predictability
+saveRDS( all.leagues, "Quanlet1 Preprocessing/all_leagues.rds")
 saveRDS( leagues, "Quanlet1 Preprocessing/leagues.rds")
 
 matches = table[, c("id", "league_id", "season", "home_team_api_id", "away_team_api_id", 
