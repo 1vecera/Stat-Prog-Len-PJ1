@@ -41,8 +41,10 @@ pca2 = PCA( Player_Attributes_quant_mean[-1],     # Pca with Just 2 components
             norm =  T
             ) 
 #Plot of number of PCs needed to 
-qplot(1:28, pca$cum, geom = "point", xlab= "Number of PC",
-      ylab="Explained Variance") + theme_bw()
+qplot(1:28, pca$cum, geom = "point", xlab= "Number of PCs",
+      ylab="Explained Variance") + theme_bw() +
+  scale_x_continuous(breaks =  seq(from = 5,to = 25, by =5 ), minor_breaks = NULL) +
+  scale_y_continuous(minor_breaks = NULL, limits = c(.4,1))
 
 # Rotations ---------------------------------------------------------------
 # Perform the rotations
