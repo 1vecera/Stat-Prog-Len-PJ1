@@ -1,4 +1,8 @@
-library(dplyr)
+#Load or Install the required packages 
+if (!require("dplyr")) {
+  install.packages("dplyr", dependencies = TRUE)
+  library(cluster)
+}
 
 # We load the table Player_all
 
@@ -6,26 +10,17 @@ if(file.exists("Player_all.rds")){           # Check if the Finished files are i
     Player_all = readRDS("Quantlet5 PCAandRotation/Player_all.rds")
 } else {source("Quanlet1 Preprocessing/preprocessing.R")}
 
-
-# We extract the quantitative informations
-
-View(Player_all)
-
-# We generate here a new database where we average over the several games of each player
+# We take the qunatitative columns for each player,
+#We take the mean levels of his scores
 
 quant = Player_all[, c(2,11:38)]   # We only keep a subset of nonquantitative variables
 quant = na.omit(quant)             # We have to delete the rows containing some missing values #not the best way to do
-L     = levels( as.factor( quant$player_api_id ))
-
 Player_Attributes_quant_mean = aggregate( quant, 
                                           by=list(quant$player_api_id), 
                                           mean
                                           )[-1]
 
-
-# First results
-
-# We can check that we obtain the same results with the function of R from quanlet 4.
+# We take the finished data and perform the PCA with the function from the quantlet 4
 source("Quantlet4 PCAFunction/PCAFunction.R")
 
 pca  = PCA( Player_Attributes_quant_mean[-1],     # All of the attributes without the id
@@ -34,7 +29,7 @@ pca  = PCA( Player_Attributes_quant_mean[-1],     # All of the attributes withou
             order = 10
             )
 
-pca2 = PCA( Player_Attributes_quant_mean[-1],     # Pca with Just 2 parts
+pca2 = PCA( Player_Attributes_quant_mean[-1],     # Pca with Just 2 components
             desiredvariance = 0.75, 
             order = 2
             ) 
@@ -54,7 +49,7 @@ List_loadings = list(
 )
 
 
-# Functions for naming columns and rows
+# Functions for naming columns and rows to distinguish between rotations and number of componets
 
 name_pca = function( PC_loadings, rotation_name = "NR"){ 
     PC_loadings_new           = PC_loadings
@@ -75,8 +70,6 @@ name_pca = function( PC_loadings, rotation_name = "NR"){
 List_loadings = mapply( name_pca,           #Applying the function name_PCA with different arguemnts
                         List_loadings,
                         c("NR","NR","VR","VR")) 
-
-
 DF_Loadings           = do.call(cbind, List_loadings)
 rownames(DF_Loadings) = colnames(quant)[-1]
 
@@ -112,17 +105,11 @@ DF_Player_Scores_VR12 = left_join( x= DF_Player_Scores_VR12,
                                    by = "player_api_id"
                                    )
 DF_Player_Scores_VR12 = unique( DF_Player_Scores_VR12)
-
+#Export the data to create basis for following quantlets 
 saveRDS( DF_Player_Scores_VR12, file= "Quantlet5 PCAandRotation/DF_Player_Scores_VR12.rds")
 saveRDS( DF_Player_Scores,      file = "Quantlet5 PCAandRotation/DF_Player_Scores.rds")
 saveRDS( DF_Loadings,           file = "Quantlet5 PCAandRotation/DF_Loadings.rds")
-
-
- 
-# Data Export Jessie ------------------------------------------------------
-
 DF_Player_Scores_VR14 = data.frame( Player_Attributes_quant_mean[1],
                                     (DF_Player_Scores[,c(7:10)])
                                     )
-
 saveRDS(DF_Player_Scores_VR14, file = "Data_Players_Match_Predictions.rds")
