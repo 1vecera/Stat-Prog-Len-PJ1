@@ -5,25 +5,19 @@ library(ggplot2)
 library(tidyr)
 library(ggrepel)
 
-
-
 #Tidy data  
 DF_Loadings = readRDS("DF_Loadings.rds")
-DF_Factor_loadings_tidy_raw = as.data.frame(cbind(c("Crossing", "Finishing", "Heading Accuracy", "Short Passing", 
-                                                    "Volleys", "Dribbling", "Curve", "Free Kick Accuracy", "Long Passing", 
-                                                    "Ball Control", "Acceleration", "Sprint Speed", "Agility", "Reactions", 
-                                                    "Balance", "Shot Power", "Jumping", "Stamina", "Strength", "Long Shots", 
-                                                    "Aggression", "Interceptions", "Positioning", "Vision", "Penalties", "Marking", 
-                                                    "Standing Tackle", "Sliding Tackle"),DF_Loadings[,c(1:2,7:8)]))
+att_names = rownames(DF_Loadings)
+att_names= gsub('_',' ',att_names)
+att_names = gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2", att_names, perl=TRUE)
 #Rename variable 
+DF_Factor_loadings_tidy_raw = data.frame(att_names_tidy,DF_Loadings[,c(1:2,7:8)])
 names(DF_Factor_loadings_tidy_raw)[1] = "Att_Name"
-
 DF_Factor_loadings_tidy  = gather(DF_Factor_loadings_tidy_raw
                                   , key = "Type_Rotation_NrCols_ComponentNumber",
                                   value = "value", - Att_Name) %>%    
                                   separate(Type_Rotation_NrCols_ComponentNumber, into=c("Type","Rotation","Nrcols","ComponentNumber"))%>% 
                                   spread(key = "ComponentNumber", value = "value")
-
 DF_Factor_loadings_tidy[5:6] = lapply(X = DF_Factor_loadings_tidy[5:6], as.numeric)
 names(DF_Factor_loadings_tidy)[5:6] =c("C1","C2")
 
