@@ -51,6 +51,12 @@ qplot(1:28, pca$cum, geom = "point", xlab= "Number of PCs",
 
 varimax_rotation_PCA  = varimax((pca$G) * -1)
 varimax_rotation_PCA2 = varimax((pca2$G)* -1)
+#Export rotation matrix for the report
+write.csv(round(varimax_rotation_PCA$rotmat,2),"Rot_Matrix.csv")
+#Extraction of cumm. var is done manualy
+varimax_rotation_PCA$loadings
+varimax_rotation_PCA2$loadings
+pca$cum[1:2]
 
 List_loadings = list( 
     No_Rotation_PCA       = (pca$G*-1), 
@@ -58,6 +64,7 @@ List_loadings = list(
     varimax_rotation_PCA  = varimax_rotation_PCA$loadings[,],     # Rotated loadings
     varimax_rotation_PCA2 = varimax_rotation_PCA2$loadings[,]     # Rotated loadings
 )
+
 
 # Functions for naming columns and rows to distinguish between rotations and number of componets
 
@@ -83,6 +90,16 @@ List_loadings = mapply( name_pca,           #Applying the function name_PCA with
 DF_Loadings           = do.call(cbind, List_loadings)
 rownames(DF_Loadings) = colnames(quant)[-1]
 
+#Get out the first and second component before and after rotation for table in report
+  selected_columns = grepl("_1|_2",colnames(DF_Loadings)) 
+  Table_rotation = round(DF_Loadings[20:28,selected_columns],digits = 2)
+  colnames(Table_rotation) 
+  #Shorten the names of the columns 
+  cnames = substr(colnames(Table_rotation) ,start = 4,
+                  stop = nchar(colnames(Table_rotation) ))
+  write.csv(x = Table_rotation,file = "Table_rotation.csv", row.names = T)
+
+    
 
 # Create Scores for each player Attention - minus has to go away
 
@@ -92,8 +109,6 @@ List_scores = list( No_Rotation_PCA       = -pca$FF,
                     varimax_rotation_PCA2 =  -pca2$FF %*% varimax_rotation_PCA2$rotmat) # Rotate the scores
 
 # Apply the naming functions
-
-
 List_scores      = mapply( name_pca,
                            List_scores,
                            c("NR","NR","VR","VR")
@@ -103,8 +118,6 @@ DF_Player_Scores = do.call( cbind,
                             )
 
 row.names(DF_Player_Scores) = Player_Attributes_quant_mean[,1]
-
-
 
 # Create data subset for the graphs with player names 
 DF_Player_Scores_VR12 = data.frame( Player_Attributes_quant_mean[1],
@@ -123,3 +136,5 @@ DF_Player_Scores_VR14 = data.frame( Player_Attributes_quant_mean[1],
                                     (DF_Player_Scores[,c(7:10)])
                                     )
 saveRDS(DF_Player_Scores_VR14, file = "Data_Players_Match_Predictions.rds")
+
+
