@@ -24,7 +24,7 @@ Submitted:         14.03.2018
 
 ```r
 #GGPlot ------------------------------------------------------------------
-#Create master plot
+#Create plots for interpretation
 
 library(ggplot2)
 library(tidyr)
