@@ -1,5 +1,5 @@
 #GGPlot ------------------------------------------------------------------
-#Create master plot
+#Create plots for interpretation
 
 library(ggplot2)
 library(tidyr)
