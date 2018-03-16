@@ -3,46 +3,17 @@ title: "Football leagues predictability"
 output: html_notebook
 ---
 
-#### Retrieving the information about leagues
+#### Reading the data about leagues and matches, retrieved in Quantlet 1
 ```{r}
-library("RSQLite")
 library("entropy")
 library("rio")
 
-con = dbConnect(drv = RSQLite::SQLite(), dbname = "database.sqlite")
-all.leagues = dbGetQuery(conn = con, statement = "SELECT * FROM 'League' ")
-print(all.leagues)
-```
-
-#### Picking some leagues
-
-```{r}
-leagues = data.frame(league_name = character(), league_id = integer(), 
-    stringsAsFactors = FALSE)
-leagues[1, ] = c("England", 1729)
-leagues[2, ] = c("France", 4769)
-leagues[3, ] = c("Germany", 7809)
-leagues[4, ] = c("Italy", 10257)
-leagues[5, ] = c("Spain", 21518)
-
-leagues
+leagues = import("leagues.rds")
+matches = import("matches.rds")
 ```
 
 
-#### Retrieving odds for all matches in selected leagues
-
-
-```{r}
-league.ids = paste(leagues[, 2], collapse = ", ")
-table = dbGetQuery(conn = con, statement = paste("SELECT * FROM Match WHERE league_id IN (", 
-    league.ids, ")", sep = ""))
-matches = table[, c("id", "league_id", "season", "home_team_api_id", "away_team_api_id", 
-    "B365H", "B365D", "B365A")]
-dbDisconnect(con)
-head(matches)
-```
-
-#### Computing entropy of odds for each
+#### Computing entropy of odds for each match
 
 ```{r}
 MatchEntropy = function(row) {
