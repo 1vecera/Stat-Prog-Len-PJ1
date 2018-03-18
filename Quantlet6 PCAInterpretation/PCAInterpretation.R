@@ -10,9 +10,12 @@ DF_Loadings = readRDS("DF_Loadings.rds")
 att_names = rownames(DF_Loadings)
 att_names= gsub('_',' ',att_names)
 att_names = gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2", att_names, perl=TRUE)
+
 #Rename variable 
 DF_Factor_loadings_tidy_raw = data.frame(att_names_tidy,DF_Loadings[,c(1:2,7:8)])
 names(DF_Factor_loadings_tidy_raw)[1] = "Att_Name"
+
+#Adjust and select columns for ggplot
 DF_Factor_loadings_tidy  = gather(DF_Factor_loadings_tidy_raw
                                   , key = "Type_Rotation_NrCols_ComponentNumber",
                                   value = "value", - Att_Name) %>%    
