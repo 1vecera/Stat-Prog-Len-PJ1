@@ -1,4 +1,3 @@
-#GGPlot ------------------------------------------------------------------
 #Create plots for interpretation
 
 library(ggplot2)
