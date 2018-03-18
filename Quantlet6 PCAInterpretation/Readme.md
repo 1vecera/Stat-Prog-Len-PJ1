@@ -71,7 +71,9 @@ Plot_FactorLoadings = ggplot(data = DF_Factor_loadings_tidy , aes(x = 0 , y = 0,
                                       scale_y_continuous("Second Component" 
                                       # ,limits = c(0.75,0.75) #- not working
                                       ) +
-                                      facet_wrap(~  Rotation )  + theme_bw()     #Two graphics rotated and not-rotated 
+                                      facet_wrap(~ Rotation ) #Two graphics rotated and not-rotated  
+                                      + theme_bw()  #Transparent Background
+#Save Plot
 ggsave("Factor_Loadings.pdf", Factor_Loadings, width = 40, height = 22, units = "cm")
 
 #Plot the players
@@ -84,4 +86,5 @@ Plot_Players = ggplot(data = DF_Player_Scores_VR12, aes(x=RC_VR_NrCol4_1, y = RC
                scale_y_continuous("Second Rotated  Component" ) +
                geom_label_repel(data = subset(DF_Player_Scores_VR12, RC_VR_NrCol4_1 > 7.5 | RC_VR_NrCol4_2 > 4.8),
                aes(label = player_name), col = "red", segment.color ="red", size = 2.5)   + theme_bw()                
+#Save Plot
 ggsave("Plot_Players.pdf", Factor_Loadings, width = 20, height = 20, units = "cm") #Save plot
