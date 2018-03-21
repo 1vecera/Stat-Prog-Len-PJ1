@@ -1,13 +1,21 @@
 #Analysis of the prediction power
-  # library(RSQLite)
+
   # If you instead want to use the database.sqlite file, please connect it
   # Else use the Match and Data Players tables
+  # library(RSQLite)
   # con = dbConnect(SQLite(), dbname="database.sqlite")
   # Match = tbl_df(dbGetQuery(con,"SELECT * FROM Match"))
 
-library(data.table)
-library(pROC)
-library(ggplot2)
+#Loading packages and/or installing them
+
+for (i in c("data.table","pROC","ggplot2")){
+  if (!require(i,character.only = T)) {
+    install.packages(i, dependencies = T)
+    library(i,character.only = T)
+  }
+
+}
+
 
 # Data Reading ------------------------------------------------------------
 
@@ -40,7 +48,7 @@ for (i in names(Match_filter)[10:31]) {
 }
 merge_df_raw = do.call(cbind,merge_list)
 
-#get rid of columns with api_id as part of them after the controlling them manually 
+#get rid of columns with api_id 
 id_columns_location = grepl("api_id",names(merge_df_raw)) #Gets out the ID Columns names locatoin
 merge_df_clean      = merge_df_raw[,-id_columns_location,with = F]
 
@@ -137,7 +145,7 @@ source("Quantlet7 PredictionFunctions/PredictionFunctions.R")
 threshold_opt  = sapply(X = 0:100/101,FUN = calc_ppc,
                         prob = reg_list$reg_no_interact$fitted.values, truth = prediction_data_fin$home_team_win )
 qplot(0:100/101, threshold_opt, geom = "line" ) + theme_bw() +
-  xlab("Threshold") + ylab("Percantage correctly Classfied")
+  xlab("Classification Probability Threshold") + ylab("Percantage Correctly Classfied") + scale_y_continuous(limits = c(0.3,0.7))
 
 
 # Ridge Regression --------------------------------------------------------
