@@ -186,6 +186,9 @@ list_cv_err$ridge_cv_err = cross_validation(fct = ridge_regression, formula = ho
                                             beta_location = "Beta", lambda = opt_lam$maximum,return_mean_PCC = F)
 #Check the train set AUC
 auc(response = prediction_data_fin$home_team_win, predictor = as.numeric(ridge_model$predictions))
+#Check number of prediction higher than one or zero 
+ridge_model$predictions[ridge_model$predictions<0 | ridge_model$predictions>1,]
+sum(ridge_model$predictions<0 | ridge_model$predictions>1)/nrow(ridge_model$predictions)*100
 #We perfrom the cross validation also for 2 of the regressions
 #As a last step, calculate 
 set.seed(123)
@@ -201,4 +204,4 @@ list_cv_err$reg_mean        =
                    ntimes = 3, data = Principal_Components_Means_DT,
                    beta_location = "coefficients", family = binomial(link = "logit"),
                    return_mean_PCC = F)
-
+list_cv_err$reg_mean
