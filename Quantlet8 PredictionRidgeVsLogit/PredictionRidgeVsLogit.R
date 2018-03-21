@@ -153,7 +153,7 @@ for (i in lambdas
      ){
   set.seed(123)
   pcc = cross_validation(fct = ridge_regression, formula = home_team_win ~ . - id, ntimes = 3, data = prediction_data_fin,
-                   beta_location = "Beta", lambda = i, return_mean_PPC = T)
+                   beta_location = "Beta", lambda = i, return_mean_PCC = T)
   pcc_array = c(pcc_array,pcc )
 }
 
@@ -163,7 +163,7 @@ qplot(lambdas,pcc_array) + theme_bw() + xlab("Lambda") + ylab("Percantage Correc
 set.seed(123)
 opt_lam = optimise(f = cross_validation,fct = ridge_regression, formula = home_team_win ~ . - id,
                    ntimes = 3, data = prediction_data_fin,
-                   beta_location = "Beta", tol = 0.001, interval = c(0,40000), return_mean_PPC = T,
+                   beta_location = "Beta", tol = 0.001, interval = c(0,40000), return_mean_PCC = T,
                    maximum = T)
 #we take the best lambda and look at the results
 ridge_model = ridge_regression(home_team_win ~ . - id,
@@ -175,7 +175,7 @@ set.seed(123)
 list_cv_err = list()
 list_cv_err$ridge_cv_err = cross_validation(fct = ridge_regression, formula = home_team_win ~ . - id,
                                             ntimes = 4, data = prediction_data_fin, 
-                                            beta_location = "Beta", lambda = opt_lam$maximum,return_mean_PPC = F)
+                                            beta_location = "Beta", lambda = opt_lam$maximum,return_mean_PCC = F)
 #Check the train set AUC
 auc(response = prediction_data_fin$home_team_win, predictor = as.numeric(ridge_model$predictions))
 #We perfrom the cross validation also for 2 of the regressions
@@ -185,12 +185,12 @@ list_cv_err$reg_no_interact =
   cross_validation(fct = glm, formula = home_team_win ~ . - id,
                    ntimes = 3, data = prediction_data_fin,
                    beta_location = "coefficients", family = binomial(link = "logit"),
-                   return_mean_PPC = F)
+                   return_mean_PCC = F)
 list_cv_err$reg_no_interact
 set.seed(123)
 list_cv_err$reg_mean        =
   cross_validation(fct = glm, formula = home_team_win ~ .*.,
                    ntimes = 3, data = Principal_Components_Means_DT,
                    beta_location = "coefficients", family = binomial(link = "logit"),
-                   return_mean_PPC = F)
+                   return_mean_PCC = F)
 
