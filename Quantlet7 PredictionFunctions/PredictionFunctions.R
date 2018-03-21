@@ -13,7 +13,7 @@ ridge_regression = function(formula, lambda = 0, data) {
   results     = list(Beta = Beta, predictions = predictions, SSR = SSR, MSE = MSE  )
   return(results)  }
 
-# #Function to calculate the percentage correctly specified ------------------
+# #Function to calculate the percentage correctly classified ------------------
 
 calc_ppc = function(threshold_int, prob, truth) {
   predictions_test_response  =  ifelse(prob > threshold_int, 1,0 ) 
@@ -26,11 +26,11 @@ calc_ppc = function(threshold_int, prob, truth) {
 #Function to return crossvalidation error, function for any additive model with formula interface 
 
 cross_validation = function(fct, beta_location = "Beta", ntimes = 5, data, formula,...,
-                            return_mean_PPC= T){
+                            return_mean_PCC= T){
   splits          = sample(x = 1:ntimes, size = nrow(data), replace = T) #Creates indizes for number of splists
   res_array       = c()
   threshold_array = c()
-  #Create test train split, perform the function, make predictions and calculate PPC
+  #Create test train split, perform the function, make predictions and calculate PCC
   for (i in 1:ntimes){
     train_data = data[!splits == i,]  
     res_loc    = fct(formula = formula,..., data = train_data) #Model Creation
@@ -39,11 +39,11 @@ cross_validation = function(fct, beta_location = "Beta", ntimes = 5, data, formu
     y_test     = test_data[[formula[[2]]
                         ]]
     predictions_test = X_test %*% res_loc[[beta_location]] #We need to know where the betas are stored
-    opt_pcc          = optimise(calc_ppc,interval = c(0,1), maximum = T, #find ideal threshold, and return associated PPC
+    opt_pcc          = optimise(calc_ppc,interval = c(0,1), maximum = T, #find ideal threshold, and return associated PCC
                           tol = 0.01, prob = predictions_test, truth = y_test)
     res_array        = c(res_array, opt_pcc[[2]]) #Save the threshold
     threshold_array  = c(threshold_array, opt_pcc[[1]]) }#Save the ppc  
-  #For optimizations purposes, we want to get a single number with mean PPC
+  #For optimizations purposes, we want to get a single number with mean PCC
   #Other times, we want to get the list of the results
-  if  (return_mean_PPC) res = mean(res_array) else res = list("PPC" = res_array, "Opt_TH" = threshold_array)
+  if  (return_mean_PCC) res = mean(res_array) else res = list("PCC" = res_array, "Opt_TH" = threshold_array)
   return(res)}
