@@ -40,7 +40,7 @@ Data_players = data.table(readRDS("Data_players_Match_predictions.rds"))
 #We use the different columns to get the data together
 merge_list = list()
 for (i in names(Match_filter)[10:31]) {
-  #For each play in the match, we join the 3 PCA columns, we use Data.Tables merge
+  #For each play in the match, we join the 4 PCA columns, we use Data.Tables merge
   merge_loop      = merge(x = Data_players, y = Match_filter,by.x= "player_api_id", by.y = i, all.y = T)
   merge_loop      = merge_loop[order(match_api_id),] #Order everything in the same order
   merge_loop      = merge_loop[,c(1:5,10)] #We want just the RC and the information about the players 
@@ -103,7 +103,7 @@ Principal_Components_Means_DT$home_team_win = prediction_data_fin$home_team_win
 
 #We want to test interaction terms for different teams
 #For each team and each principal component, we want to create the name
-interaction_terms = " home_team_win ~ . - id"  #We start by string which we used for the first regressiion
+interaction_terms = " home_team_win ~ . - id"  #We start by string which we used for the first regression
 for (i in paste0("4_",1:4)){ #We go component by component and create the interaction term
   home_interaction_term = 
       paste0(collapse = ":", #combine the names of the columns with ":" as separator
@@ -116,7 +116,6 @@ for (i in paste0("4_",1:4)){ #We go component by component and create the intera
   )
   #we combine the interaction terms with plus sign
   interaction_terms = paste(interaction_terms, home_interaction_term, away_interaction_term, sep= " + " )
-  
 }
 
 
@@ -142,7 +141,7 @@ sapply(X = fitted_values_list,FUN = auc, response = merge_df_clean$home_team_win
 #We need the functions of the quantlet 7
 source("Quantlet7 PredictionFunctions/PredictionFunctions.R")
 #Proving that threshold optimization does not bring a lot of value with logit models
-threshold_opt  = sapply(X = 0:100/101,FUN = calc_ppc,
+threshold_opt  = sapply(X = 0:100/101,FUN = calc_pcc,
                         prob = reg_list$reg_no_interact$fitted.values, truth = prediction_data_fin$home_team_win )
 qplot(0:100/101, threshold_opt, geom = "line" ) + theme_bw() +
   xlab("Classification Probability Threshold") + ylab("Percantage Correctly Classfied") + scale_y_continuous(limits = c(0.3,0.7))
@@ -204,4 +203,3 @@ list_cv_err$reg_mean        =
                    ntimes = 3, data = Principal_Components_Means_DT,
                    beta_location = "coefficients", family = binomial(link = "logit"),
                    return_mean_PCC = F)
-list_cv_err$reg_mean

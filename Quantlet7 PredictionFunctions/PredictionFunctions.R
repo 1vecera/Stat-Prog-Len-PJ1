@@ -15,7 +15,7 @@ ridge_regression = function(formula, lambda = 0, data) {
 
 # #Function to calculate the percentage correctly classified ------------------
 
-calc_ppc = function(threshold_int, prob, truth) {
+calc_pcc = function(threshold_int, prob, truth) {
   predictions_test_response  =  ifelse(prob > threshold_int, 1,0 ) 
   #Sum the true positive and true negative 
   correctly_classified       =  sum(diag(
@@ -39,7 +39,7 @@ cross_validation = function(fct, beta_location = "Beta", ntimes = 5, data, formu
     y_test     = test_data[[formula[[2]]
                         ]]
     predictions_test = X_test %*% res_loc[[beta_location]] #We need to know where the betas are stored
-    opt_pcc          = optimise(calc_ppc,interval = c(0,1), maximum = T, #find ideal threshold, and return associated PCC
+    opt_pcc          = optimise(calc_pcc,interval = c(0,1), maximum = T, #find ideal threshold, and return associated PCC
                           tol = 0.01, prob = predictions_test, truth = y_test)
     res_array        = c(res_array, opt_pcc[[2]]) #Save the threshold
     threshold_array  = c(threshold_array, opt_pcc[[1]]) }#Save the ppc  
