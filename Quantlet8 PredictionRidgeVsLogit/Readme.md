@@ -23,7 +23,6 @@ Submitted:         22.03.2018
 
 ### R Code:
 
-#### Plotting predictability of the leagues using the dataset created in Quantlet9
 
 ```{r}
 #Analysis of the prediction power
