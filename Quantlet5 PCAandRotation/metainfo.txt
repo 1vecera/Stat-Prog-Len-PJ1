@@ -1,0 +1,13 @@
+Name of Quantlet:  PCAandRotation
+ 
+Published in:      Statistical Programming Languages
+  
+Description:       'We take the PCA Function from Quantlet 4 PCAFunction and apply on Football data. We Rotate the components and do data wrangling.'
+ 
+Keywords:          pca, varimax, data wrangling, tidy, data_table
+
+See also:          Quantlet4 PCAFunction
+
+Author:            Daniel Vecera
+  
+Submitted:         22.03.2018
