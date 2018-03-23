@@ -1,0 +1,13 @@
+Name of Quantlet:  PredictionRidgeVsLogit
+ 
+Published in:      Statistical Programming Languages
+  
+Description:       'Using Ridge and Logit Regression to determine the outcome of the match based on the quality of the players'
+ 
+Keywords:          ridge, cv, cross-validation, pcc, correctly, classified, logit, glm, binary, classification
+
+See also:          Quantlet
+
+Author:            Daniel Vecera
+  
+Submitted:         22.03.2018
