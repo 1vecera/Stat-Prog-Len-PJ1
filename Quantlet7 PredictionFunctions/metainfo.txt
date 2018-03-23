@@ -1,0 +1,13 @@
+Name of Quantlet:  PredictionFunctions
+ 
+Published in:      Statistical Programming Languages
+  
+Description:       'Functions for performing Ridge Regression, Cross Validation and calculating Percentage Correctly Classified'
+ 
+Keywords:          ridge, cv, cross-validation, pcc, correctly, classified
+
+See also:          Quantlet8
+
+Author:            Daniel Vecera
+  
+Submitted:         22.03.2018
