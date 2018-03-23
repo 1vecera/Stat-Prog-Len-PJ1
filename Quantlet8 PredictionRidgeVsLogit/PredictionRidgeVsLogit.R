@@ -12,8 +12,7 @@ for (i in c("data.table","pROC","ggplot2")){
   if (!require(i,character.only = T)) {
     install.packages(i, dependencies = T)
     library(i,character.only = T)
-  }
-
+  } 
 }
 
 
@@ -66,6 +65,8 @@ merge_df_clean = data.table(na.omit(merge_df_clean)) #Get rid of circa 1000 rows
 merge_df_clean[home_team_goal  > away_team_goal, home_team_win:= T ]
 merge_df_clean[!home_team_goal > away_team_goal, home_team_win:= F ]
 
+#Showing the relationships of home winners to others
+round(prop.table(table(merge_df_clean$home_team_win, dnn = c("Home Win")))*100,2)
 # Creating Team Means -----------------------------------------------------
 
 #We wanted to see if the means themselves can be used as predictions factors instead the ones of the single players
@@ -94,7 +95,7 @@ Principal_Components_Means_DT =
   Principal_Components_Means_DT[,sort(names(Principal_Components_Means_DT),decreasing = T)]
 
 #Join the final data together, want just the result, the prediction columns and id so we have something to check if it does make sense
-prediction_data_fin = data.table(merge_df_clean[,c(1,33:length(merge_df_clean)),with = F])
+prediction_data_fin = data.table(merge_df_clean[,c(1,32:length(merge_df_clean)),with = F])
 #We add the also the home team win to the compoments means for easier regression aftewards
 Principal_Components_Means_DT$home_team_win = prediction_data_fin$home_team_win
 
@@ -145,8 +146,8 @@ threshold_opt  = sapply(X = 0:100/101,FUN = calc_pcc,
                         prob = reg_list$reg_no_interact$fitted.values, truth = prediction_data_fin$home_team_win )
 qplot(0:100/101, threshold_opt, geom = "line" ) + theme_bw() +
   xlab("Classification Probability Threshold") + ylab("Percantage Correctly Classfied") + scale_y_continuous(limits = c(0.3,0.7))
-
-
+#Example summary with the values
+summary(object = reg_list$reg_no_interact )
 # Ridge Regression --------------------------------------------------------
 #Use the ridge function to perform naive prediction model
 
@@ -156,14 +157,12 @@ qplot(0:100/101, threshold_opt, geom = "line" ) + theme_bw() +
 lambdas = c(c(1,4,7) %o% 10^(0:4)) #Outer product to try wide range of lambdas
 pcc_array = c()
 for (i in lambdas
-     # seq(from = 0, to= 100,length.out = 10 )
      ){
   set.seed(123)
   pcc = cross_validation(fct = ridge_regression, formula = home_team_win ~ . - id, ntimes = 3, data = prediction_data_fin,
                    beta_location = "Beta", lambda = i, return_mean_PCC = T)
   pcc_array = c(pcc_array,pcc )
 }
-
 qplot(lambdas,pcc_array) + theme_bw() + xlab("Lambda") + ylab("Percantage Correctly Classified")
 #We see that optimal landa will be somewhere between 0 and 30 000
 #We create search for the best lambda
@@ -175,7 +174,7 @@ opt_lam = optimise(f = cross_validation,fct = ridge_regression, formula = home_t
 #we take the best lambda and look at the results
 ridge_model = ridge_regression(home_team_win ~ . - id,
                                data = prediction_data_fin, lambda = opt_lam$maximum)
-
+opt_lam
 # Comparing Ridge Regression and Logistic Regression ----------------------
 #Now we use crossvalidation to return the optimal  thrashold and associated PCC
 set.seed(123)
@@ -203,3 +202,7 @@ list_cv_err$reg_mean        =
                    ntimes = 3, data = Principal_Components_Means_DT,
                    beta_location = "coefficients", family = binomial(link = "logit"),
                    return_mean_PCC = F)
+#Calculate the means of the results, use Unlist to decrease the levels of the list by one
+sapply(X = unlist(list_cv_err,recursive = F), FUN = mean)
+
+       

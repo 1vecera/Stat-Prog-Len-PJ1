@@ -1,0 +1,7 @@
+,Logit models,,,Ridge Models,,
+Measure,Players,Players w/ Interaction terms,Team Means,No Interaction Terms,,
+AUC,0.7105,0.7108,0.7018,0.7042,,
+CV PCC,0.6460,NA,0.6441,0.6468,,
+CV Opt Th,0.1041,NA,0.1360,0.4950,,
+,,,,,,
+,,,,,,
