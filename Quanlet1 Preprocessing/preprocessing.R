@@ -54,7 +54,7 @@ if(file.exists("database.sqlite")){
     Player_Attributes = tbl_df( dbGetQuery( con, "SELECT * FROM Player_Attributes"))
     all.leagues       = dbGetQuery( conn = con, statement = "SELECT * FROM 'League' ")
     
-    league.ids   = paste(leagues[, 2], collapse = ", ")
+    league.ids        = paste(leagues[, 2], collapse = ", ")
     table             = dbGetQuery( conn = con, 
                                     statement = paste( "SELECT * FROM Match WHERE league_id IN (", 
                                                        league.ids, 
