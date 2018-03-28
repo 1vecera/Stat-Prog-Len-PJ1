@@ -1,32 +1,16 @@
-# download automatically the database stored on kaagle and save it in our working directory
-
-# working_directory=getwd()
-# database_name=paste(working_directory,"/database.sqlite",sep="")
-# download.file(url = "https://www.kaggle.com/hugomathien/soccer/downloads/database.sqlite/10",
-#              destfile = database_name, mode = "wb")
 
 
-#if(!file.exists("database.sqlite")){
- #   print("Please download the database file from kaggle.com, unzip and put in working directory.")
-   # print("https://www.kaggle.com/hugomathien/soccer/data")
-#}
-
-# load required packages
-if (!require("RSQLite")) {
-    install.packages("RSQLite", dependencies = TRUE)
-    library(RSQLite)
+if(!file.exists("database.sqlite")){
+  print("Please download the database file from kaggle.com, unzip and put in working directory.")
+print("https://www.kaggle.com/hugomathien/soccer/data")
 }
-if (!require("dplyr")) {
-    install.packages("dplyr", dependencies = TRUE)
-    library(dplyr)
-}
-if (!require("stringr")) {
-    install.packages("stringr", dependencies = TRUE)
-    library(stringr)
-}
-if (!require("purrr")) {
-    install.packages("purrr", dependencies = TRUE)
-    library(purrr)
+
+# load/Instal required packages
+for (i in c("RSQLite","dplyr","stringr","purrr")){
+  if (!require(i,character.only = T)) {
+    install.packages(i, dependencies = T)
+    library(i,character.only = T)
+  } 
 }
 
 # prepare a list of the leagues that we are interested in, for predictability
